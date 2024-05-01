@@ -39,8 +39,9 @@ jobs:
       
       - name: Install & run yarn
         run: |
-          sudo apt-get update -y
-          sudo corepack enable && apt-get install -y nodejs tree
+          sudo apt-get update -y 
+          sudo apt-get install -y nodejs tree
+          sudo corepack enable 
           yarn set version stable
           yarn install
       
