@@ -118,6 +118,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
+          name: Node Collection ${{ needs.Date.outputs.Date }}
           tag_name: ${{ steps.date.outputs.date }}
           make_latest: true
           files: |
