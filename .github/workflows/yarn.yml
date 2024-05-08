@@ -48,7 +48,7 @@ jobs:
       - name: TARchive node_modules directory
         run: |
             ls -lah ${{ github.workspace }}
-            tar -cvzf node-modules-${{ steps.date.outputs.date }}.tgz .node_modules \
+            tar -cvzf node-modules-${{ steps.date.outputs.date }}.tgz node_modules \
               | tee node-modules-${{ steps.date.outputs.date }}.tgz.txt
 
       - name: TARchive yarn cache directory
