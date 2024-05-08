@@ -78,36 +78,42 @@ jobs:
         with:
           name: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
           path: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
 
       - name: Upload cache ToC artifact
         uses: actions/upload-artifact@v4
         with:
           name: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
       
       - name: Upload modules artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
           path: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
   
       - name: Upload cache ToC artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
           
       # - name: Upload assembly artifact
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: yarn-assembly-${{ steps.date.outputs.date }}.zip
+      #     name: yarn-assembly-${{ needs.Date.outputs.Date }}.zip
       #     path: target/demo-0.0.1.zip
+      #     if-no-files-found: error
           
       # - name: Upload BOM ZIP
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: yarn-bom-${{ steps.date.outputs.date }}.zip
-      #     path: yarn-bom-${{ steps.date.outputs.date }}.zip
+      #     name: yarn-bom-${{ needs.Date.outputs.Date }}.zip
+      #     path: yarn-bom-${{ needs.Date.outputs.Date }}.zip
+      #     if-no-files-found: error
   
   
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
@@ -123,6 +129,11 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
     
       - name: Create tag
         uses: rickstaa/action-create-tag@v1
@@ -131,7 +142,7 @@ jobs:
           tag: ${{ needs.Date.outputs.Date }}
           github_token: ${{secrets.GITHUB_TOKEN}}
           tag_exists_error: false
-          message: "Release for ${{ steps.date.outputs.date }} run"
+          message: "Release for node-modules ${{ needs.Date.outputs.Date }} run"
 
       - name: Create Release
         id: create_release
