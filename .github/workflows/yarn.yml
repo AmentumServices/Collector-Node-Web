@@ -134,6 +134,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+
+      - name: Diff results
+        run: |
+          diff yarn-cache-[12]*.txt | tee yarn-cache-diff-${{ needs.Date.outputs.Date }}.txt
+          diff node-modules-[12]*.txt | tee node-modules-diff-${{ needs.Date.outputs.Date }}.txt
     
       - name: Create tag
         uses: rickstaa/action-create-tag@v1
