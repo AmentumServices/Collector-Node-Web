@@ -1,0 +1,120 @@
+name: Node CI with Maven
+run-name: ${{ github.actor }} is Collecting Nodi-ness🚀
+on:
+  push:
+    branches: []
+jobs:
+  Date:
+    runs-on: ubuntu-latest
+    outputs:
+      Date: ${{ steps.date.outputs.date }}
+    steps:
+      - name: Get current date
+        id: DATE
+        run: |
+          echo "Setting Date"
+          echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+          echo -e "\nWrote to file:\n$GITHUB_OUTPUT\n"
+          echo "Values:"
+          cat $GITHUB_OUTPUT
+
+  Collect:
+    runs-on: ubuntu-latest
+    needs: [Date]
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    permissions:
+      contents: write
+      pull-requests: read
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Set up git
+        run: |
+          git config user.name "$(git log -n 1 --pretty=format:%an)"
+          git config user.email "$(git log -n 1 --pretty=format:%ae)"
+
+      - name: Install yarn
+        run: |
+          sudo apt-get update -y 
+          sudo corepack enable
+
+      - name: Run yarn
+        run: |
+          yarn set version 4.0.2
+          yarn install
+
+      - name: TARchive node_modules directory
+        run: |
+          ls -lah ${{ github.workspace }}
+          tar -cvzf node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz node_modules \
+            | tee node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+
+      - name: TARchive yarn cache directory
+        run: |
+          ls -lah ${{ github.workspace }}
+          tar -cvzf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz .yarn \
+            | tee yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+
+      # - name: Create BoM ZIP
+      #   run: |
+      #       cd target
+      #       ls -lah
+      #       zip ../yarn-bom-${{ needs.Date.outputs.Date }}.zip bom.*
+
+      - name: Upload cache artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          path: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+
+      - name: Upload cache ToC artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
+
+      - name: Upload modules artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          path: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+
+      - name: Upload cache ToC artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
+
+      # - name: Upload assembly artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: yarn-assembly-${{ needs.Date.outputs.Date }}.zip
+      #     path: target/demo-0.0.1.zip
+      #     if-no-files-found: error
+
+      # - name: Upload BOM ZIP
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: yarn-bom-${{ needs.Date.outputs.Date }}.zip
+      #     path: yarn-bom-${{ needs.Date.outputs.Date }}.zip
+      #     if-no-files-found: error
+
+      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+      #- name: Update dependency graph
+      #  uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
