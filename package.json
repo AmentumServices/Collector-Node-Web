@@ -99,6 +99,9 @@
     "worldwindjs": "^1.9.5",
     "yarn": "^1.22.19"
   },
+  "devDependencies": {
+    "eslint": "^8.1.0"
+  },
   "browserslist": [
     ">0.2%",
     "not dead",
