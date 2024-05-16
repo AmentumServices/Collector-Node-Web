@@ -123,7 +123,7 @@ jobs:
       - name: CycloneDX and npm install
         run: |
           npm install --global @cyclonedx/cyclonedx-npm
-          npm install
+          npm install --force
 
       - name: Run CycloneDX BOM Generation
         run: |
