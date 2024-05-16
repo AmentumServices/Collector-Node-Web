@@ -2,7 +2,8 @@ name: Node Collector - Branch Test
 run-name: ${{ github.actor }} is Collecting Nodi-ness🚀
 on:
   push:
-    branches: []
+    branches-ignore:
+      - main
 jobs:
   Date:
     runs-on: ubuntu-latest
