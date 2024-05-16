@@ -9,6 +9,7 @@ node_modules.tar
 coverage/
 docs/
 .yarn/cache
+yarn.lock
 
 # Ignore Files
 *.tgz
