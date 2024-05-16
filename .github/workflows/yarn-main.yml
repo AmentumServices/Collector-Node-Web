@@ -120,9 +120,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
       
-      - name: Run CycloneDX BOM Generation
+      - name: CycloneDX and npm install
         run: |
           npm install --global @cyclonedx/cyclonedx-npm
+          npm install
+
+      - name: Run CycloneDX BOM Generation
+        run: |
           cyclonedx-npm --output-file "node-bom.json"
           cyclonedx-npm --output-format XML --output-file "node-bom.xml"
 
