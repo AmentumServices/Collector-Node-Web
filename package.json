@@ -28,6 +28,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
     "esbuild-loader": "^2.21.0",
+    "eslint": "^8.1.0",
     "file-loader": "^6.2.0",
     "html-minimizer-webpack-plugin": "^4.3.0",
     "html-webpack-plugin": "^5.5.0",
@@ -98,9 +99,6 @@
     "worldwind-react-globe": "^1.2.0",
     "worldwindjs": "^1.9.5",
     "yarn": "^1.22.19"
-  },
-  "devDependencies": {
-    "eslint": "^8.1.0"
   },
   "browserslist": [
     ">0.2%",
