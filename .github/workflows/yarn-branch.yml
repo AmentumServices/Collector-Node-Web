@@ -116,11 +116,20 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+
+      - name: Install yarn
+        run: |
+          sudo apt-get update -y 
+          sudo corepack enable
+
+      - name: Run yarn
+        run: |
+          yarn set version 4.0.2
+          yarn install
       
-      - name: CycloneDX and npm install
+      - name: installCycloneDX and npm 
         run: |
           npm install --global @cyclonedx/cyclonedx-npm
-          npm install --force
   
       - name: Run CycloneDX BOM Generation
         run: |
