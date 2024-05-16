@@ -1,4 +1,4 @@
-name: Node CI with Maven
+name: Node Collector - Branch Test
 run-name: ${{ github.actor }} is Collecting Nodi-ness🚀
 on:
   push:
