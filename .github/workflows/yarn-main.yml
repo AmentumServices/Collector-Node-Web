@@ -56,6 +56,7 @@ jobs:
       - name: Run yarn
         run: |
           yarn set version 4.0.2
+          rm -f yarn.lock
           yarn install
 
       - name: TARchive node_modules directory
@@ -128,6 +129,7 @@ jobs:
       - name: Run yarn
         run: |
           yarn set version 4.0.2
+          rm -f yarn.lock
           yarn install
       
       - name: Install CycloneDX 
