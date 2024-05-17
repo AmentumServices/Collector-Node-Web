@@ -52,12 +52,10 @@ jobs:
         run: |
           sudo apt-get update -y 
           sudo corepack enable
+          yarn set version 4.0.2
 
       - name: Run yarn
-        run: |
-          yarn set version 4.0.2
-          rm -f yarn.lock package-lock.json 
-          yarn install
+        run: yarn install
 
       - name: TARchive node_modules directory
         run: |
@@ -125,12 +123,10 @@ jobs:
         run: |
           sudo apt-get update -y 
           sudo corepack enable
+          yarn set version 4.0.2
 
       - name: Run yarn
-        run: |
-          yarn set version 4.0.2
-          rm -f yarn.lock package-lock.json 
-          yarn install
+        run: yarn install
       
       - name: Install CycloneDX 
         run: |
