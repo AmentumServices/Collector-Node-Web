@@ -67,6 +67,13 @@ jobs:
           tar -cvzf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz .yarn \
             | tee yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
+      - name: TARchive yarn lock file
+        run: |
+          ls -lah ${{ github.workspace }}
+          tar -cvzf yarn-lock-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz yarn.lock \
+            | tee yarn-lock-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+      
+
       - name: Upload cache artifact
         uses: actions/upload-artifact@v4
         with:
@@ -93,6 +100,20 @@ jobs:
         with:
           name: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
+
+      - name: Upload Yarn Lock Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn-lock-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          path: yarn-lock-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+
+      - name: Upload Yarn Lock Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn-lock-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: yarn-lock-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
   Release:
