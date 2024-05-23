@@ -128,11 +128,11 @@ jobs:
       - name: Run yarn
         run: yarn install
       
-      # - name: Install CycloneDX 
-      #   run: |
-      #     npm install --global @cyclonedx/cyclonedx-npm --force
-      #     export RESULT_CYCLONE=$?
-      #     echo -e "\nInstall Result: $RESULT_CYCLONE"
+      - name: Install CycloneDX 
+        run: |
+          npm install --global @cyclonedx/cyclonedx-npm --force
+          export RESULT_CYCLONE=$?
+          echo -e "\nInstall Result: $RESULT_CYCLONE"
 
       - name: Run CycloneDX BOM Generation
         run: |
