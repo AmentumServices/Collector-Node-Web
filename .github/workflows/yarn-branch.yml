@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -58,13 +58,15 @@ jobs:
       - name: TARchive node_modules directory
         run: |
           ls -lah ${{ github.workspace }}
-          tar -cvzf node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz node_modules \
+          tar -cvzf node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
+            node_modules yarn.lock package* .yarnrc.yml \
             | tee node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive yarn cache directory
         run: |
           ls -lah ${{ github.workspace }}
-          tar -cvzf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz .yarn \
+          tar -cvzf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
+            .yarn yarn.lock package* .yarnrc.yml \
             | tee yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: Upload cache artifact
@@ -112,7 +114,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -126,10 +128,10 @@ jobs:
       - name: Run yarn
         run: yarn install
       
-      - name: installCycloneDX and npm 
+      - name: Install CycloneDX 
         run: |
           npm install --global @cyclonedx/cyclonedx-npm
-  
+
       - name: Run CycloneDX BOM Generation
         run: |
           cyclonedx-npm --output-file "node-bom.json"
