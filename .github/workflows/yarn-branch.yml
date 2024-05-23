@@ -117,19 +117,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          
+            
       - name: Install yarn
         run: |
           sudo apt-get update -y 
           sudo corepack enable
           yarn set version 4.0.2
 
-      - name: Download Artifacts
+      - name: Download Yarn Cache
         uses: actions/download-artifact@v4
         with:
-          merge-multiple: true
+          name: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
 
       - name: Run yarn
-        run: yarn install --offline
+        run: yarn install --immutable --immutable-cache
       
