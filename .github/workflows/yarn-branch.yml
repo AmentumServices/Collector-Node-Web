@@ -129,6 +129,12 @@ jobs:
         with:
           name: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
 
+      - name: Untar cache
+        run: |
+          ls -AlS
+          tar -xzv \
+            -f yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
+            .yarn
+
       - name: Run yarn
         run: yarn install --immutable --immutable-cache
-      
