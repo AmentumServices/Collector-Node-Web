@@ -96,3 +96,40 @@ jobs:
           name: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
+
+  OfflineTest:
+    runs-on: ubuntu-latest
+    needs: [Date, Collect]
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    permissions:
+      contents: write
+      pull-requests: read
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          
+      - name: Install yarn
+        run: |
+          sudo apt-get update -y 
+          sudo corepack enable
+          yarn set version 4.0.2
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Run yarn
+        run: yarn install --offline
+      
