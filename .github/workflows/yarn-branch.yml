@@ -136,8 +136,11 @@ jobs:
 
       - name: Run CycloneDX BOM Generation
         run: |
+          echo -e "\nGenerate JSON BOM\n"
           cyclonedx-npm --output-file "node-bom.json"
           export RESULT_JSON=$?
+          echo -e "\nJSON Result: $RESULT_JSON"
+          echo -e "\nGenerate XML BOM\n"
           cyclonedx-npm --output-format XML --output-file "node-bom.xml"
           export RESULT_XML=$?
           echo -e "\nResults:
