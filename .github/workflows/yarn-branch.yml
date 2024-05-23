@@ -135,7 +135,12 @@ jobs:
       - name: Run CycloneDX BOM Generation
         run: |
           cyclonedx-npm --output-file "node-bom.json"
+          export RESULT_JSON=$?
           cyclonedx-npm --output-format XML --output-file "node-bom.xml"
+          export RESULT_XML=$?
+          echo -e "\nResults:
+          echo -e "\tJSON: $RESULT_JSON"
+          echo -e "\tXML:  $RESULT_XML"
 
       - name: Create BoM ZIP
         run: |
