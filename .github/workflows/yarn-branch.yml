@@ -148,3 +148,9 @@ jobs:
           name: yarn-bom-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.zip
           path: yarn-bom-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.zip
           if-no-files-found: error
+
+      - name: Upload npm logs ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-logs-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.zip
+          path: /home/runner/.npm/_logs/*.log
