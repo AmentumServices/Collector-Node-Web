@@ -57,14 +57,14 @@ jobs:
 
       - name: TARchive node_modules directory
         run: |
-          ls -lah ${{ github.workspace }}
+          ls -lAhS ${{ github.workspace }}
           tar -cvzf node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
             node_modules yarn.lock package* .yarnrc.yml \
             | tee node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive yarn cache directory
         run: |
-          ls -lah ${{ github.workspace }}
+          ls -lAhS ${{ github.workspace }}
           tar -cvzf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
             .yarn yarn.lock package* .yarnrc.yml \
             | tee yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
@@ -129,12 +129,14 @@ jobs:
         with:
           name: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
 
-      - name: Untar cache
+      - name: Untar cache and remove artifact
         run: |
-          ls -AlS
+          echo -e "\nUntar .yarn\n"
           tar -xzv \
             -f yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
             .yarn
+          echo -e "\nRemove archive\n"
+          rm -vf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
 
       - name: Run yarn
         run: yarn install --immutable --immutable-cache
