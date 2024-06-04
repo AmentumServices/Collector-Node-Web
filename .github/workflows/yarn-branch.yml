@@ -59,7 +59,7 @@ jobs:
         run: |
           ls -lAhS ${{ github.workspace }}
           tar -cvzf node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
-            node_modules yarn.lock package* .yarnrc.yml \
+            node_modules \
             | tee node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive yarn cache directory
