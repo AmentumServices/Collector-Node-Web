@@ -163,7 +163,7 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: ls -lh
+        run: ls -lh *tgz*
 
       - name: Send Files to Sharepoint
         uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
