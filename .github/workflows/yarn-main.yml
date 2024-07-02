@@ -163,12 +163,12 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: ls -alh
+        run: ls -lh
 
       - name: Send Files to Sharepoint
         uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
         with:
-          file_path: "${{ vars.COLLECTOR }}-*.*"
+          file_path: "*tgz*"
           host_name: 'jacobsfederal.sharepoint.us'
           site_name: 'USCMSNISSCII.DSO'
           upload_path: '${{ vars.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/${{ needs.Date.outputs.Date }}'
