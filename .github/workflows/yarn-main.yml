@@ -6,6 +6,8 @@ on:
       - main
   schedule:
     - cron: "0 0 * * 1" # Update weekly on Monday Midnight
+  workflow_dispatch:
+    
 jobs:
   Date:
     runs-on: ubuntu-latest
@@ -161,7 +163,7 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: ls -alh ${{ vars.COLLECTOR }}-*.*
+        run: ls -alh
 
       - name: Send Files to Sharepoint
         uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
