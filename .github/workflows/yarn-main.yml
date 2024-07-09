@@ -204,13 +204,13 @@ jobs:
             *tgz*
 
       - name: Implant MD5 sum into iso
-        run: implantisomd5 ${{ steps.vars.outputs.ROOTDIR }}-${{ needs.Date.outputs.Date }}.iso
+        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
 
       - name: Generate Hash
         run: |
-          sha256sum -b ${{ steps.vars.outputs.ROOTDIR }}-${{ needs.Date.outputs.Date }}.iso >>\
-            ${{ steps.vars.outputs.ROOTDIR }}-${{ needs.Date.outputs.Date }}.iso.sha
-          cat ${{ steps.vars.outputs.ROOTDIR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso >>\
+            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          cat ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
         run: ls -alh *.iso*
