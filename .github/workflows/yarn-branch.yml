@@ -58,9 +58,11 @@ jobs:
           #   verdaccio/verdaccio
           # docker ps
           yarn dlx verdaccio &
-          ls -Alht $PWD/verdaccio
-          ls -Alht $PWD/verdaccio/*
           sleep 15
+          echo -e "\nListing home\n"
+          ls -Alht ~/verdaccio
+          ls -Alht ~/verdaccio/*
+          echo -e "\nchecking connecivity\n"
           curl http://localhost:4873
 
       - name: Install yarn
@@ -76,10 +78,21 @@ jobs:
 
       - name: Get verdaccio dir
         run: |
+          echo -e "\nListing local\n"
           ls -Alht *
+          echo -e "\nListing home\n"
           ls -Alht ~/*
+          echo -e "\nListing tree\n"
           #tree
+          echo -e "\nListing locat verdaccio\n"
           ls -Alht $PWD/verdaccio/*
+
+      - name: TARchive ~/verdaccio directory
+        run: |
+          ls -laht ~/verdaccio
+          tar -cvzf verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
+            -C ~ verdaccio \
+            | tee verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
         run: |
@@ -94,6 +107,20 @@ jobs:
           tar -cvzf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
             .yarn yarn.lock package* .yarnrc.yml \
             | tee yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+
+      - name: Upload verdaccio artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          path: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+
+      - name: Upload verdaccio ToC artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
 
       - name: Upload cache artifact
         uses: actions/upload-artifact@v4
