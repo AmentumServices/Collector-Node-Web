@@ -1,8 +1,5 @@
 storage: ./verdaccio/storage
 plugins: ./verdaccio/plugins
-auth:
-  htpasswd:
-    file: ./verdaccio/htpasswd
 uplinks:
   npmjs:
     url: https://registry.npmjs.org/
