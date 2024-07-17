@@ -63,8 +63,10 @@ jobs:
             --name verdaccio \
             verdaccio/verdaccio
           docker ps
+          yarn config set unsafe-perm true
           npm set registry http://localhost:4873/
           yarn config set npmRegistryServer http://localhost:4873/
+          yarn install --registry http://localhost:4873/
           
       - name: Run yarn
         run: yarn install
