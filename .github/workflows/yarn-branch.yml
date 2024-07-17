@@ -48,7 +48,6 @@ jobs:
 
       - name: Run yarn with verdaccio
         run: |
-          export VERDACCIO_STORAGE_PATH=verdaccio/storage
           mkdir -pv verdaccio/storage
           mkdir -pv verdaccio/plugins
           yarn dlx verdaccio &
@@ -68,8 +67,8 @@ jobs:
           ls -Alht verdaccio/*
           #echo -e "\nListing tree\n"
           #tree
-          echo -e "\nListing ~/.local/share/storage"
-          ls -Alht ~/.local/share/storage/
+          echo -e "\nListing ~/.local/share/*"
+          ls -Alht ~/.local/share/*
 
       - name: TARchive verdaccio directory
         run: |
