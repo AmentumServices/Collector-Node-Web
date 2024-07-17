@@ -50,15 +50,17 @@ jobs:
         run: |
           mkdir -pv $PWD/verdaccio/storage
           mkdir -pv $PWD/verdaccio/plugins
-          docker run -it --detach \
-            --publish 4873:4873 \
-            --volume $PWD/verdaccio/storage:/verdaccio/storage \
-            --volume $PWD/verdaccio/plugins:/verdaccio/plugins \
-            --name verdaccio \
-            verdaccio/verdaccio
-          docker ps
+          # docker run -it --detach \
+          #   --publish 4873:4873 \
+          #   --volume $PWD/verdaccio/storage:/verdaccio/storage \
+          #   --volume $PWD/verdaccio/plugins:/verdaccio/plugins \
+          #   --name verdaccio \
+          #   verdaccio/verdaccio
+          # docker ps
+          yarn dlx verdaccio
+          ls -Alht $PWD/verdaccio
           ls -Alht $PWD/verdaccio/*
-          curl http://localhost:4873/
+          curl http://localhost:4873
 
       - name: Install yarn
         run: |
