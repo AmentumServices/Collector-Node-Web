@@ -76,7 +76,8 @@ jobs:
 
       - name: Get verdaccio dir
         run: |
-          tree
+          ls -Alht *
+          #tree
           ls -Alht $PWD/verdaccio/*
 
       - name: TARchive node_modules directory
