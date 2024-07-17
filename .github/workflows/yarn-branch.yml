@@ -68,6 +68,8 @@ jobs:
           ls -Alht verdaccio/*
           #echo -e "\nListing tree\n"
           #tree
+           echo -e "\nListing $XDG_DATA_HOME/*"
+          ls -Alht $XDG_DATA_HOME/*
 
       - name: TARchive verdaccio directory
         run: |
