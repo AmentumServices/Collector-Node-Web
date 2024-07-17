@@ -62,8 +62,8 @@ jobs:
           yarn install
           echo -e "\nListing local\n"
           ls -Alht 
-          echo -e "\nListing storage/*"
-          ls -Alht storage/*
+          echo -e "\nListing storage"
+          ls -Alht storage
           #echo -e "\nListing tree\n"
           #tree
 
