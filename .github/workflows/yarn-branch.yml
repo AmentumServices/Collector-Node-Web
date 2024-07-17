@@ -58,9 +58,9 @@ jobs:
           #   verdaccio/verdaccio
           # docker ps
           yarn dlx verdaccio &
-          sleep 15
+          sleep 10
           echo -e "\nListing home\n"
-          ls -Alht ~/*
+          ls -Alht verdaccio
           echo -e "\nchecking connecivity\n"
           curl http://localhost:4873
 
@@ -86,11 +86,11 @@ jobs:
           echo -e "\nListing locat verdaccio\n"
           ls -Alht $PWD/verdaccio/*
 
-      - name: TARchive ~/verdaccio directory
+      - name: TARchive verdaccio directory
         run: |
           ls -laht ~/verdaccio
           tar -cvzf verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
-            -C ~ verdaccio \
+            verdaccio \
             | tee verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
