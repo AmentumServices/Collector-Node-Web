@@ -68,14 +68,14 @@ jobs:
           ls -Alht verdaccio/*
           #echo -e "\nListing tree\n"
           #tree
-           echo -e "\nListing $XDG_DATA_HOME/*"
-          ls -Alht $XDG_DATA_HOME/*
+          echo -e "\nListing ~/.local/share/storage"
+          ls -Alht ~/.local/share/storage/
 
       - name: TARchive verdaccio directory
         run: |
-          ls -Alht verdaccio/*
+          ls -Alht ~/.local/share/storage/
           tar -cvzf verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
-            verdaccio \
+            -C ~/.local/share storage \
             | tee verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
