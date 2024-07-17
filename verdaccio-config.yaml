@@ -9,11 +9,8 @@ uplinks:
 packages:
   '@*/*':
     access: $all
-    publish: $all
+    publish: $authenticated
     proxy: npmjs
   '**':
     proxy: npmjs
-middlewares:
-  audit:
-    enabled: true
 log: { type: stdout, format: pretty, level: http }
