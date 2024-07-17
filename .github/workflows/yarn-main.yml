@@ -186,7 +186,7 @@ jobs:
 
   Sharepoint:
     runs-on: ubuntu-latest
-    needs: [Date, Collect]
+    needs: [Date, Collect, MakeISO]
     permissions:
       contents: write
       pull-requests: read
@@ -197,7 +197,9 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: ls -lh *tgz*
+        run: |
+          ls -lh *tgz*
+          ls -lh *iso*
 
       - name: Send Files to Sharepoint
         uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
@@ -206,6 +208,19 @@ jobs:
           host_name: "jacobsfederal.sharepoint.us"
           site_name: "USCMSNISSCII.DSO"
           upload_path: "${{ vars.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/${{ needs.Date.outputs.Date }}"
+          tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
+          client_id: ${{ secrets.SHAREPOINT_APP_ID }}
+          client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
+          login_endpoint: "login.microsoftonline.us"
+          graph_endpoint: "graph.microsoft.us"
+
+      - name: Send ISO to Sharepoint
+        uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
+        with:
+          file_path: "*.iso*"
+          host_name: "jacobsfederal.sharepoint.us"
+          site_name: "USCMSNISSCII.DSO"
+          upload_path: "${{ vars.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/"
           tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
           client_id: ${{ secrets.SHAREPOINT_APP_ID }}
           client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
@@ -266,15 +281,4 @@ jobs:
           path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
           if-no-files-found: error
 
-      - name: Send ISO to Sharepoint
-        uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
-        with:
-          file_path: "*.iso*"
-          host_name: "jacobsfederal.sharepoint.us"
-          site_name: "USCMSNISSCII.DSO"
-          upload_path: "${{ vars.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/"
-          tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
-          client_id: ${{ secrets.SHAREPOINT_APP_ID }}
-          client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
-          login_endpoint: "login.microsoftonline.us"
-          graph_endpoint: "graph.microsoft.us"
+     
