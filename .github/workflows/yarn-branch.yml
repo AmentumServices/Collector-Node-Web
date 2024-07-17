@@ -46,12 +46,6 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Install yarn
-        run: |
-          sudo apt-get update -y 
-          sudo corepack enable
-          yarn set version 4.0.2
-
       - name: Run verdaccio
         run: |
           mkdir -pv $PWD/verdaccio/storage
@@ -63,13 +57,18 @@ jobs:
             --name verdaccio \
             verdaccio/verdaccio
           docker ps
+
+      - name: Install yarn
+        run: |
+          sudo apt-get update -y 
+          sudo corepack enable
+          yarn set version 4.0.2
           yarn config set unsafe-perm true
           npm set registry http://localhost:4873/
           yarn config set npmRegistryServer http://localhost:4873/
-          yarn install --registry http://localhost:4873/
           
       - name: Run yarn
-        run: yarn install
+        run: yarn install --registry http://localhost:4873/
 
       - name: Get verdaccio dir
         run: |
