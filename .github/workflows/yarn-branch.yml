@@ -60,6 +60,7 @@ jobs:
           yarn dlx verdaccio &
           ls -Alht $PWD/verdaccio
           ls -Alht $PWD/verdaccio/*
+          sleep 15
           curl http://localhost:4873
 
       - name: Install yarn
