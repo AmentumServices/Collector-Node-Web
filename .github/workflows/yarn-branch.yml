@@ -60,8 +60,7 @@ jobs:
           yarn dlx verdaccio &
           sleep 15
           echo -e "\nListing home\n"
-          ls -Alht ~/verdaccio
-          ls -Alht ~/verdaccio/*
+          ls -Alht ~/*
           echo -e "\nchecking connecivity\n"
           curl http://localhost:4873
 
