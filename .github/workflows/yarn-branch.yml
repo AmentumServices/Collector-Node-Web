@@ -58,15 +58,21 @@ jobs:
           mkdir -pv $PWD/verdaccio/plugins
           docker run -it --detach \
             --publish 4873:4873 \
-            --volume `pwd`/storage:/verdaccio/storage \
-            --volume `pwd`/plugins:/verdaccio/plugins \
+            --volume $PWD/verdaccio/storage:/verdaccio/storage \
+            --volume $PWD/verdaccio/plugins:/verdaccio/plugins \
             --name verdaccio \
             verdaccio/verdaccio
           docker ps
           npm set registry http://localhost:4873/
+          yarn config set npmRegistryServer http://localhost:4873/
           
       - name: Run yarn
         run: yarn install
+
+      - name: Get verdaccio dir
+        run: |
+          tree
+          ls -Alht $PWD/verdaccio/*
 
       - name: TARchive node_modules directory
         run: |
