@@ -57,6 +57,8 @@ jobs:
             --name verdaccio \
             verdaccio/verdaccio
           docker ps
+          ls -Alht $PWD/verdaccio/*
+          curl http://localhost:4873/
 
       - name: Install yarn
         run: |
@@ -67,7 +69,7 @@ jobs:
           yarn config set npmRegistryServer http://localhost:4873/
           
       - name: Run yarn
-        run: yarn install --registry http://localhost:4873/
+        run: yarn install
 
       - name: Get verdaccio dir
         run: |
