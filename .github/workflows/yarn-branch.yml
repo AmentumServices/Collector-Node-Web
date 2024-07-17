@@ -46,10 +46,8 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Run verdaccio
+      - name: Run yarn with verdaccio
         run: |
-          mkdir -pv $PWD/verdaccio/storage
-          mkdir -pv $PWD/verdaccio/plugins
           # docker run -it --detach \
           #   --publish 4873:4873 \
           #   --volume $PWD/verdaccio/storage:/verdaccio/storage \
@@ -63,32 +61,22 @@ jobs:
           ls -Alht verdaccio
           echo -e "\nchecking connecivity\n"
           curl http://localhost:4873
-
-      - name: Install yarn
-        run: |
-          sudo apt-get update -y 
           sudo corepack enable
           yarn set version 4.0.2
           npm set registry http://localhost:4873/
           yarn config set npmRegistryServer http://localhost:4873/
-          
-      - name: Run yarn
-        run: yarn install
+          yarn install
 
       - name: Get verdaccio dir
         run: |
-          echo -e "\nListing local\n"
-          ls -Alht *
-          echo -e "\nListing home\n"
-          ls -Alht ~/*
-          echo -e "\nListing tree\n"
+          echo -e "\nListing verdaccio/*"
+          ls -Alht verdaccio/*
+          #echo -e "\nListing tree\n"
           #tree
-          echo -e "\nListing locat verdaccio\n"
-          ls -Alht $PWD/verdaccio/*
 
       - name: TARchive verdaccio directory
         run: |
-          ls -laht ~/verdaccio
+          ls -laht verdaccio
           tar -cvzf verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
             verdaccio \
             | tee verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
