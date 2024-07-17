@@ -57,8 +57,7 @@ jobs:
           #   --name verdaccio \
           #   verdaccio/verdaccio
           # docker ps
-          yarn dlx forever
-          forever start verdaccio
+          yarn dlx verdaccio &
           ls -Alht $PWD/verdaccio
           ls -Alht $PWD/verdaccio/*
           curl http://localhost:4873
