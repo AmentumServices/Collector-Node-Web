@@ -63,16 +63,16 @@ jobs:
           yarn install
           echo -e "\nListing local\n"
           ls -Alht 
-          echo -e "\nListing storage"
-          ls -Alht storage
+          echo -e "\nListing verdaccio/*"
+          ls -Alht verdaccio/*
           #echo -e "\nListing tree\n"
           #tree
 
       - name: TARchive verdaccio directory
         run: |
-          ls -Alht storage/*
+          ls -Alht verdaccio/*
           tar -cvzf verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
-            storage \
+            verdaccio \
             | tee verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
