@@ -48,15 +48,6 @@ jobs:
 
       - name: Run yarn with verdaccio
         run: |
-          # mkdir -pv verdaccio/storage
-          # mkdir -pv verdaccio/plugins
-          # docker run -it --detach \
-          #   --publish 4873:4873 \
-          #   --volume $PWD/verdaccio/storage:/verdaccio/storage \
-          #   --volume $PWD/verdaccio/plugins:/verdaccio/plugins \
-          #   --name verdaccio \
-          #   verdaccio/verdaccio
-          # docker ps
           yarn dlx verdaccio &
           sleep 10
           sudo corepack enable
@@ -68,7 +59,9 @@ jobs:
           echo -e "\nRunning Yarn"
           yarn install
           echo -e "\nListing home\n"
-          ls -Alht verdaccio/*
+          ls -Alht ~/*
+          echo -e "\nListing local\n"
+          ls -Alht 
 
       - name: Get verdaccio dir
         run: |
