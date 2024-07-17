@@ -48,24 +48,27 @@ jobs:
 
       - name: Run yarn with verdaccio
         run: |
-          # docker run -it --detach \
-          #   --publish 4873:4873 \
-          #   --volume $PWD/verdaccio/storage:/verdaccio/storage \
-          #   --volume $PWD/verdaccio/plugins:/verdaccio/plugins \
-          #   --name verdaccio \
-          #   verdaccio/verdaccio
-          # docker ps
-          yarn dlx verdaccio &
+          mkdir -pv verdaccio/storage
+          mkdir -pv verdaccio/plugins
+          docker run -it --detach \
+            --publish 4873:4873 \
+            --volume $PWD/verdaccio/storage:/verdaccio/storage \
+            --volume $PWD/verdaccio/plugins:/verdaccio/plugins \
+            --name verdaccio \
+            verdaccio/verdaccio
+          docker ps
+          # yarn dlx verdaccio &
           sleep 10
-          echo -e "\nListing home\n"
-          ls -Alht verdaccio
-          echo -e "\nchecking connecivity\n"
-          curl http://localhost:4873
           sudo corepack enable
           yarn set version 4.0.2
           npm set registry http://localhost:4873/
           yarn config set npmRegistryServer http://localhost:4873/
+          echo -e "\nChecking Connectivity\n"
+          curl http://localhost:4873
+          echo -e "\nRunning Yarn"
           yarn install
+          echo -e "\nListing home\n"
+          ls -Alht verdaccio/*
 
       - name: Get verdaccio dir
         run: |
