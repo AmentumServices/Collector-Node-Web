@@ -52,6 +52,19 @@ jobs:
           sudo corepack enable
           yarn set version 4.0.2
 
+      - name: Run verdaccio
+        run: |
+          mkdir -pv $PWD/verdaccio/storage
+          mkdir -pv $PWD/verdaccio/plugins
+          docker run -it --detach \
+            --publish 4873:4873 \
+            --volume `pwd`/storage:/verdaccio/storage \
+            --volume `pwd`/plugins:/verdaccio/plugins \
+            --name verdaccio \
+            verdaccio/verdaccio
+          docker ps
+          npm set registry http://localhost:4873/
+          
       - name: Run yarn
         run: yarn install
 
