@@ -46,14 +46,28 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Install yarn
+      - name: Run yarn with verdaccio
         run: |
-          sudo apt-get update -y 
+          yarn dlx verdaccio &
+          sleep 12
           sudo corepack enable
           yarn set version 4.0.2
+          npm set registry http://localhost:4873/
+          yarn config set npmRegistryServer http://localhost:4873/
+          echo -e "\nChecking Connectivity\n"
+          curl http://localhost:4873 -o test.html
+          sleep 1
+          echo -e "\nRunning Yarn"
+          yarn install
+          echo -e "\nListing ~/.local/share/verdaccio/*"
+          ls -Alht ~/.local/share/verdaccio/*
 
-      - name: Run yarn
-        run: yarn install
+      - name: TARchive verdaccio storage directory
+        run: |
+          ls -Alht ~/.local/share/verdaccio/storage
+          tar -cvzf verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
+            -C ~/.local/share/verdaccio storage \
+            | tee verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
         run: |
@@ -68,6 +82,20 @@ jobs:
           tar -cvzf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
             .yarn yarn.lock package* .yarnrc.yml \
             | tee yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+
+      - name: Upload verdaccio artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          path: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+
+      - name: Upload verdaccio ToC artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
 
       - name: Upload cache artifact
         uses: actions/upload-artifact@v4
