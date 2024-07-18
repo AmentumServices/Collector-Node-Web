@@ -63,8 +63,6 @@ jobs:
           sleep 1
           echo -e "\nRunning Yarn"
           yarn install
-          echo -e "\nRunning Yarn Upgrade\n"
-          yarn upgrade --latest
           echo -e "\nListing ~/.local/share/verdaccio/*"
           ls -Alht ~/.local/share/verdaccio/*
 
