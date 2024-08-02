@@ -4,6 +4,8 @@ on:
   push:
     branches-ignore:
       - main
+  workflow_dispatch:
+
 jobs:
   Date:
     runs-on: ubuntu-latest
@@ -24,7 +26,7 @@ jobs:
     needs: [Date]
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x, 20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     permissions:
@@ -46,14 +48,35 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
 
-      - name: Install yarn
+      - name: Run yarn with verdaccio
         run: |
-          sudo apt-get update -y 
+          yarn dlx verdaccio &
+          sleep 12
           sudo corepack enable
           yarn set version 4.0.2
+          npm set registry http://localhost:4873/
+          yarn config set npmRegistryServer http://localhost:4873/
+          echo -e "\nChecking Connectivity\n"
+          curl http://localhost:4873 -o test.html
+          sleep 1
+          echo -e "\nRunning Yarn"
+          yarn install
+          echo -e "\nListing ~/.local/share/verdaccio/*"
+          ls -Alht ~/.local/share/verdaccio/*
 
-      - name: Run yarn
-        run: yarn install
+      - name: TARchive verdaccio storage directory
+        run: |
+          ls -Alht ~/.local/share/verdaccio/storage
+          tar -cvzf verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
+            -C ~/.local/share/verdaccio storage \
+            | tee verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+
+      - name: TARchive node_modules directory
+        run: |
+          ls -lah ${{ github.workspace }}
+          tar -cvzf node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
+            node_modules yarn.lock package* .yarnrc.yml \
+            | tee node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
         run: |
@@ -68,6 +91,20 @@ jobs:
           tar -cvzf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
             .yarn yarn.lock package* .yarnrc.yml \
             | tee yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+
+      - name: Upload verdaccio artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          path: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          if-no-files-found: error
+
+      - name: Upload verdaccio ToC artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          path: verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+          if-no-files-found: error
 
       - name: Upload cache artifact
         uses: actions/upload-artifact@v4
@@ -105,6 +142,82 @@ jobs:
         node-version: [18.x, 20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
+      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+      #- name: Update dependency graph
+      #  uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+
+  MakeISO:
+    runs-on: ubuntu-latest
+    needs: [Date, Collect]
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Install mkisofs
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y mkisofs isomd5sum wget
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Download Node Installers
+        run: |
+          echo -e "\nDownloading installers\n"
+          mkdir runtimes
+          cd runtimes
+          wget -nv https://nodejs.org/dist/v18.20.4/node-v18.20.4-x64.msi
+          wget -nv https://nodejs.org/dist/v18.20.4/node-v18.20.4-win-x64.zip
+          wget -nv https://nodejs.org/dist/v20.16.0/node-v20.16.0-x64.msi
+          wget -nv https://nodejs.org/dist/v20.16.0/node-v20.16.0-win-x64.zip
+          wget -nv https://nodejs.org/dist/v22.5.1/node-v22.5.1-x64.msi
+          wget -nv https://nodejs.org/dist/v22.5.1/node-v22.5.1-win-x64.zip
+          wget -nv https://nodejs.org/dist/v18.20.4/node-v18.20.4-linux-x64.tar.xz
+          wget -nv https://nodejs.org/dist/v20.16.0/node-v20.16.0-linux-x64.tar.xz
+          wget -nv https://nodejs.org/dist/v22.5.1/node-v22.5.1-linux-x64.tar.xz
+
+      - name: Show Artifacts
+        run: ls -alh *tgz*
+
+      - name: Make ISO
+        run: |
+          mkisofs -J -R -v -T -l \
+            -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
+            -A '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
+            -o ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso \
+            *tgz* runtimes
+
+      - name: Implant MD5 sum into iso
+        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+
+      - name: Generate Hash
+        run: |
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso >>\
+            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          cat ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+
+      - name: Show ISO & Hash
+        run: ls -alh *.iso*
+
+      - name: Upload iso artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+          if-no-files-found: error
+
+      - name: Upload iso sha artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          if-no-files-found: error
+
+  Release:
+    runs-on: ubuntu-latest
+    needs: [Date, Collect, MakeISO]
     permissions:
       contents: write
       pull-requests: read
@@ -113,30 +226,43 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-            
-      - name: Install yarn
-        run: |
-          sudo apt-get update -y 
-          sudo corepack enable
-          yarn set version 4.0.2
-
-      - name: Download Yarn Cache
+      - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          merge-multiple: true
 
-      - name: Untar cache and remove artifact
+      - name: Diff results
         run: |
-          echo -e "\nUntar .yarn\n"
-          tar -xzv \
-            -f yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
-            .yarn
-          echo -e "\nRemove archive\n"
-          rm -vf yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+          echo -e "Diff results for 18 to 20\n"
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            yarn-cache-18*.txt yarn-cache-20*.txt
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            node-modules-18*.txt node-modules-20*.txt
+          echo -e "\nDiff results for 18 to 22\n"
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            yarn-cache-18*.txt yarn-cache-20*.txt
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            node-modules-18*.txt node-modules-20*.txt
+          echo -e "\nDiff results for 20 to 22\n"
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            yarn-cache-20*.txt yarn-cache-22*.txt
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            node-modules-20*.txt node-modules-22*.txt
 
-      - name: Run yarn
-        run: yarn install --immutable --immutable-cache
+      - name: Show Artifacts
+        run: ls -lh *tgz* *iso*
+
+  Sharepoint:
+    runs-on: ubuntu-latest
+    needs: [Date, Collect, MakeISO]
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Show Artifacts
+        run: ls -lh *tgz* *iso*
