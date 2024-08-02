@@ -158,8 +158,15 @@ jobs:
 
       - name: Diff results
         run: |
-          diff yarn-cache-[12]*.txt
-          diff node-modules-[12]*.txt
+          echo -e "Diff results for 18 to 20\n"
+          diff -yad yarn-cache-[18|20]*.txt
+          diff -yad node-modules-[18|20]*.txt
+          echo -e "\nDiff results for 18 to 22\n"
+          diff -yad yarn-cache-[18|22]*.txt
+          diff -yad node-modules-[18|22]*.txt
+          echo -e "\nDiff results for 20 to 22\n"
+          diff -yad yarn-cache-[20|22]*.txt
+          diff -yad node-modules-[20|22]*.txt
 
       - name: Create tag
         uses: rickstaa/action-create-tag@v1
