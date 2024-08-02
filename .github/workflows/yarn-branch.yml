@@ -4,6 +4,8 @@ on:
   push:
     branches-ignore:
       - main
+  workflow_dispatch:
+
 jobs:
   Date:
     runs-on: ubuntu-latest
@@ -24,7 +26,7 @@ jobs:
     needs: [Date]
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x, 20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     permissions:
@@ -68,6 +70,13 @@ jobs:
           tar -cvzf verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
             -C ~/.local/share/verdaccio storage \
             | tee verdaccio-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
+
+      - name: TARchive node_modules directory
+        run: |
+          ls -lah ${{ github.workspace }}
+          tar -cvzf node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
+            node_modules yarn.lock package* .yarnrc.yml \
+            | tee node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
         run: |
@@ -124,6 +133,10 @@ jobs:
           name: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
           path: node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
           if-no-files-found: error
+
+      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+      #- name: Update dependency graph
+      #  uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
 
   MakeISO:
     runs-on: ubuntu-latest
