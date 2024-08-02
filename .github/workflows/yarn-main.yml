@@ -243,6 +243,9 @@ jobs:
           diff -yad --suppress-blank-empty --suppress-common-lines \
             node-modules-20*.txt node-modules-22*.txt
 
+      - name: Show Artifacts
+        run: ls -lh *tgz* *iso*
+
       - name: Create tag
         uses: rickstaa/action-create-tag@v1
         id: tag_create
@@ -279,9 +282,7 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: |
-          ls -lh *tgz*
-          ls -lh *iso*
+        run: ls -lh *tgz* *iso*
 
       - name: Send Files to Sharepoint
         uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1

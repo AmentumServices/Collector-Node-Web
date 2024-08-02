@@ -241,6 +241,9 @@ jobs:
           diff -yad --suppress-blank-empty --suppress-common-lines \
             node-modules-20*.txt node-modules-22*.txt
 
+      - name: Show Artifacts
+        run: ls -lh *tgz* *iso*
+
   Sharepoint:
     runs-on: ubuntu-latest
     needs: [Date, Collect, MakeISO]
@@ -254,6 +257,4 @@ jobs:
           merge-multiple: true
 
       - name: Show Artifacts
-        run: |
-          ls -lh *tgz*
-          ls -lh *iso*
+        run: ls -lh *tgz* *iso*
