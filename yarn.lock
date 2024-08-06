@@ -11107,6 +11107,7 @@ __metadata:
     prettier: "npm:^3.1.0"
     prop-types: "npm:^15.8.1"
     react: "npm:^18.2.0"
+    react-chartjs-2: "npm:^5.2.0"
     react-dom: "npm:^18.2.0"
     react-globe.gl: "npm:^2.27.0"
     react-markdown: "npm:^9.0.1"
@@ -12396,6 +12397,16 @@ __metadata:
     react: ^0.13.0 || ^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0
     react-dom: ^0.13.0 || ^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0
   checksum: 6efdad04bcdebcefccded7939fdeb71a53fd031c2690c0c0ff88991926901166cf8b7fc6617d72fff3d3e28ba33cc5a658a791bd397ce73fd01e39a392a323f8
+  languageName: node
+  linkType: hard
+
+"react-chartjs-2@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "react-chartjs-2@npm:5.2.0"
+  peerDependencies:
+    chart.js: ^4.1.1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 437e443a268b7eebab3f1a6f0f5d936e58caf650fca55f568a612a46c563d22af683a64185eac8005aa644e4960a5a72cc1075a2574b89ec46c7653aaf4025e2
   languageName: node
   linkType: hard
 
