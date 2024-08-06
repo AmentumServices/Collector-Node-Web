@@ -82,7 +82,7 @@ jobs:
         run: |
           ls -lAhS ${{ github.workspace }}
           tar -cvzf node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz \
-            node_modules \
+            node_modules yarn.lock package* .yarnrc.yml \
             | tee node-modules-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive yarn cache directory
@@ -203,9 +203,51 @@ jobs:
           path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
           if-no-files-found: error
 
-  Release:
+  OfflineTest:
     runs-on: ubuntu-latest
     needs: [Date, Collect, MakeISO]
+    permissions:
+      contents: write
+      pull-requests: read
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Download ISO
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*
+
+      - name: Validate Hashes
+        run: |
+          echo -e "\nFigure out how to check both isos here"
+
+      - name: Mount ISO
+        run: sudo mount -v -o loop ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso /mnt
+
+      - name: UnTARchive Yarn Cache
+        run: tar -xzvf /mnt/yarn-cache-${{ matrix.node-version }}-${{ needs.Date.outputs.Date }}.tgz
+
+      - name: Run yarn install
+        run: |
+          echo -e "Setup Yarn for inaccessable network"
+          npm set registry http://localhost:4873/
+          yarn config set npmRegistryServer http://localhost:4873/
+          echo -e "\nRun yarn install --immutable\n"
+          yarn install --immutable
+
+      - name: Run yarn install
+        run: |
+          echo -e "Run Yarn"
+          yarn run
+
+  Release:
+    runs-on: ubuntu-latest
+    needs: [Date, Collect, MakeISO, OfflineTest]
     permissions:
       contents: write
       pull-requests: read
@@ -242,7 +284,7 @@ jobs:
 
   Sharepoint:
     runs-on: ubuntu-latest
-    needs: [Date, Collect, MakeISO]
+    needs: [Date, Collect, MakeISO, OfflineTest]
     permissions:
       contents: write
       pull-requests: read
