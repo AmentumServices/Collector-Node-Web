@@ -72,6 +72,7 @@
     "@types/uuid": "^8.3.4",
     "@types/websocket": "^1.0.5",
     "axios": "^1.2.1",
+    "chart.js": "^4.4.3",
     "d3": "^7.6.1",
     "geojson": "^0.5.0",
     "jquery": "^3.7.1",
