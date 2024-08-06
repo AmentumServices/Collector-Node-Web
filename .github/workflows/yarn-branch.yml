@@ -266,6 +266,7 @@ jobs:
       - name: Diff results
         run: |
           echo -e "Diff results for 18 to 20\n"
+          set -e
           diff -yad --suppress-blank-empty --suppress-common-lines \
             yarn-cache-18*.txt yarn-cache-20*.txt
           diff -yad --suppress-blank-empty --suppress-common-lines \
