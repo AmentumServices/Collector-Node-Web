@@ -248,7 +248,7 @@ jobs:
           echo -e "\nRun yarn install --immutable\n"
           yarn install --immutable
 
-      - name: Run yarn install
+      - name: Run yarn
         run: |
           echo -e "Run Yarn"
           yarn run
@@ -270,7 +270,7 @@ jobs:
           merge-multiple: true
 
       - name: Diff results
-        shell: /usr/bin/bash
+        shell: bash
         run: |
           echo -e "Diff results for 18 to 20"
           diff -yad --suppress-blank-empty --suppress-common-lines \
