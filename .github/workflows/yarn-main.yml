@@ -150,7 +150,7 @@ jobs:
       - name: Download ToC txt files
         uses: actions/download-artifact@v4
         with:
-          pattern: *.txt
+          pattern: "*.txt"
           merge-multiple: true 
 
       - name: Diff ToC results
@@ -264,7 +264,6 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-    
     steps:
       - name: Install isomd5sum
         run: |
@@ -277,7 +276,7 @@ jobs:
       - name: Download ISO and hash
         uses: actions/download-artifact@v4
         with:
-          pattern: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*
+          pattern: "${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*"
           merge-multiple: true 
 
       - name: Validate Hashes
