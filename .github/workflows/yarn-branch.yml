@@ -264,19 +264,19 @@ jobs:
           merge-multiple: true
 
       - name: Diff results
+        shell: /usr/bin/bash
         run: |
-          echo -e "Diff results for 18 to 20\n"
-          set -e
+          echo -e "Diff results for 18 to 20"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             yarn-cache-18*.txt yarn-cache-20*.txt
           diff -yad --suppress-blank-empty --suppress-common-lines \
             node-modules-18*.txt node-modules-20*.txt
-          echo -e "\nDiff results for 18 to 22\n"
+          echo -e "\nDiff results for 18 to 22"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             yarn-cache-18*.txt yarn-cache-20*.txt
           diff -yad --suppress-blank-empty --suppress-common-lines \
             node-modules-18*.txt node-modules-20*.txt
-          echo -e "\nDiff results for 20 to 22\n"
+          echo -e "\nDiff results for 20 to 22"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             yarn-cache-20*.txt yarn-cache-22*.txt
           diff -yad --suppress-blank-empty --suppress-common-lines \
