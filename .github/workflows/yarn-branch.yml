@@ -244,8 +244,12 @@ jobs:
 
       - name: Validate Hashes
         run: |
-          echo -e "\nFigure out how to check both isos here"
+          echo -e "List Artifacts"
           ls -Alht
+          echo -e "\nCheck injected ISO MD5"
+          checkisomd5 --verbose ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+          echo -e "\nCheck ISO sha256"
+          sha256sum -cw ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
 
       - name: Mount ISO
         run: sudo mount -v -o loop ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso /mnt
