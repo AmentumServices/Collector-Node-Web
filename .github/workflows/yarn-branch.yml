@@ -242,7 +242,7 @@ jobs:
           echo -e "\nRun yarn install --immutable\n"
           yarn install --immutable
 
-      - name: Run yarn install
+      - name: Run yarn
         run: |
           echo -e "Run Yarn"
           yarn run
