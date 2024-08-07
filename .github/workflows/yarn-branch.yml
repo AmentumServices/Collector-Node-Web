@@ -145,24 +145,44 @@ jobs:
       contents: write
       pull-requests: read
     steps:
-      - name: Diff results
+      - name: Download ToC txt files
+        uses: actions/download-artifact@v4
+        with:
+          pattern: *.txt
+          merge-multiple: true 
+
+      - name: Diff ToC results
         run: |
-          set +e
           echo -e "Diff results for 18 to 20"
+          echo -e "Diff yarn-cache"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             yarn-cache-18*.txt yarn-cache-20*.txt
+          echo -e "Diff node-modules"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             node-modules-18*.txt node-modules-20*.txt
+          echo -e "Diff verdaccio"
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            verdaccio-18*.txt verdaccio-20*.txt
           echo -e "\nDiff results for 18 to 22"
+          echo -e "Diff yarn-cache"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             yarn-cache-18*.txt yarn-cache-20*.txt
+          echo -e "Diff node-modules"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             node-modules-18*.txt node-modules-20*.txt
+          echo -e "Diff verdaccio"
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            verdaccio-18*.txt verdaccio-22*.txt
           echo -e "\nDiff results for 20 to 22"
+          echo -e "Diff yarn-cache"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             yarn-cache-20*.txt yarn-cache-22*.txt
+          echo -e "Diff node-modules"
           diff -yad --suppress-blank-empty --suppress-common-lines \
             node-modules-20*.txt node-modules-22*.txt
+          echo -e "Diff verdaccio"
+          diff -yad --suppress-blank-empty --suppress-common-lines \
+            verdaccio-20*.txt verdaccio-22*.txt
 
   MakeISO:
     runs-on: ubuntu-latest
