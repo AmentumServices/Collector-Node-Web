@@ -69,23 +69,16 @@ jobs:
 
       - name: TARchive node_modules directory
         run: |
-          ls -lah ${{ github.workspace }}
-          tar -cvzf node-modules-${{ needs.Date.outputs.Date }}.tgz \
-            node_modules yarn.lock package* .yarnrc.yml \
-            | tee node-modules-${{ needs.Date.outputs.Date }}.tgz.txt
-
-      - name: TARchive node_modules directory
-        run: |
           ls -lAhS ${{ github.workspace }}
           tar -cvzf node-modules-${{ needs.Date.outputs.Date }}.tgz \
-            node_modules yarn.lock package* .yarnrc.yml \
+            node_modules yarn.lock \
             | tee node-modules-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: TARchive yarn cache directory
         run: |
           ls -lAhS ${{ github.workspace }}
           tar -cvzf yarn-cache-${{ needs.Date.outputs.Date }}.tgz \
-            .yarn yarn.lock package* .yarnrc.yml \
+            .yarn yarn.lock \
             | tee yarn-cache-${{ needs.Date.outputs.Date }}.tgz.txt
 
       - name: Upload verdaccio artifact
@@ -123,7 +116,7 @@ jobs:
           path: node-modules-${{ needs.Date.outputs.Date }}.tgz
           if-no-files-found: error
 
-      - name: Upload cache ToC artifact
+      - name: Upload modules ToC artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-modules-${{ needs.Date.outputs.Date }}.tgz.txt
