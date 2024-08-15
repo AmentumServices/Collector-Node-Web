@@ -46,10 +46,10 @@ jobs:
 
       - name: Run yarn with verdaccio
         run: |
-          yarn dlx verdaccio &
-          sleep 12
           sudo corepack enable
           yarn set version 3.6.3
+          yarn dlx verdaccio &
+          sleep 12
           npm set registry http://localhost:4873/
           yarn config set npmRegistryServer http://localhost:4873/
           echo -e "\nChecking Connectivity\n"
