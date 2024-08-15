@@ -63,7 +63,6 @@ jobs:
       - name: Run yarn with verdaccio
         run: |
           sudo corepack enable
-          yarn set version 3.6.3
           yarn dlx verdaccio &
           sleep 12
           npm set registry http://localhost:4873/
