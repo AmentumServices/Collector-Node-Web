@@ -138,7 +138,7 @@ jobs:
   #       uses: actions/download-artifact@v4
   #       with:
   #         pattern: "*.txt"
-  #         merge-multiple: true 
+  #         merge-multiple: true
 
   #     - name: Diff ToC results
   #       run: |
@@ -207,7 +207,7 @@ jobs:
           wget -nv https://nodejs.org/dist/latest-v22.x/node-v22.6.0-win-x64.zip
           wget -nv https://nodejs.org/dist/latest-v18.x/node-v18.20.4-linux-x64.tar.xz
           wget -nv https://nodejs.org/dist/latest-v20.x/node-v20.16.0-linux-x64.tar.xz
-          wget -nv https://nodejs.org/dist/latest-v22.xnode-v22.6.0-linux-x64.tar.xz
+          wget -nv https://nodejs.org/dist/latest-v22.x/node-v22.6.0-linux-x64.tar.xz
 
       - name: Copy Markdowns to ISO
         run: cp -v *.md ISO/
@@ -271,7 +271,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: "${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*"
-          merge-multiple: true 
+          merge-multiple: true
 
       - name: Validate Hashes
         run: |
@@ -317,7 +317,6 @@ jobs:
         with:
           merge-multiple: true
 
-      
       - name: Show Artifacts
         run: ls -lh *tgz* *iso*
 
