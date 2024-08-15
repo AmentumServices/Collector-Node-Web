@@ -7,23 +7,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  Date:
+  Setup:
     runs-on: ubuntu-latest
     outputs:
       Date: ${{ steps.date.outputs.date }}
+      v18:  ${{ steps.v.outputs.v18 }}
+      v20:  ${{ steps.v.outputs.v20 }}
+      v22:  ${{ steps.v.outputs.v22 }}
     steps:
       - name: Get current date
         id: DATE
         run: |
-          echo "Setting Date"
+          echo "Getting Date"
           echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
-          echo -e "\nWrote to file:\n$GITHUB_OUTPUT\n"
+          echo -e "\nFile:\n$GITHUB_OUTPUT"
+          echo "Values:"
+          cat $GITHUB_OUTPUT
+
+      - name: Get current node versions
+        id: v
+        run: |
+          echo -e "\nGetting versions"
+          echo "v18=$(curl -s https://nodejs.org/dist/latest-v18.x/ | grep -oP 'v18\.\d+\.\d+' | head -1)" >> $GITHUB_OUTPUT
+          echo "v20=$(curl -s https://nodejs.org/dist/latest-v20.x/ | grep -oP 'v20\.\d+\.\d+' | head -1)" >> $GITHUB_OUTPUT
+          echo "v22=$(curl -s https://nodejs.org/dist/latest-v22.x/ | grep -oP 'v22\.\d+\.\d+' | head -1)" >> $GITHUB_OUTPUT
+          echo -e "\nFile:\n$GITHUB_OUTPUT"
           echo "Values:"
           cat $GITHUB_OUTPUT
 
   Collect:
     runs-on: ubuntu-latest
-    needs: [Date]
+    needs: [Setup]
 
     permissions:
       contents: write
@@ -63,64 +77,64 @@ jobs:
       - name: TARchive verdaccio storage directory
         run: |
           ls -Alht ~/.local/share/verdaccio/storage
-          tar -cvzf verdaccio-${{ needs.Date.outputs.Date }}.tgz \
+          tar -cvzf verdaccio-${{ needs.Setup.outputs.Date }}.tgz \
             -C ~/.local/share/verdaccio storage \
-            | tee verdaccio-${{ needs.Date.outputs.Date }}.tgz.txt
+            | tee verdaccio-${{ needs.Setup.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
         run: |
           ls -lAhS ${{ github.workspace }}
-          tar -cvzf node-modules-${{ needs.Date.outputs.Date }}.tgz \
+          tar -cvzf node-modules-${{ needs.Setup.outputs.Date }}.tgz \
             node_modules yarn.lock \
-            | tee node-modules-${{ needs.Date.outputs.Date }}.tgz.txt
+            | tee node-modules-${{ needs.Setup.outputs.Date }}.tgz.txt
 
       - name: TARchive yarn cache directory
         run: |
           ls -lAhS ${{ github.workspace }}
-          tar -cvzf yarn-cache-${{ needs.Date.outputs.Date }}.tgz \
+          tar -cvzf yarn-cache-${{ needs.Setup.outputs.Date }}.tgz \
             .yarn yarn.lock \
-            | tee yarn-cache-${{ needs.Date.outputs.Date }}.tgz.txt
+            | tee yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.txt
 
       - name: Upload verdaccio artifact
         uses: actions/upload-artifact@v4
         with:
-          name: verdaccio-${{ needs.Date.outputs.Date }}.tgz
-          path: verdaccio-${{ needs.Date.outputs.Date }}.tgz
+          name: verdaccio-${{ needs.Setup.outputs.Date }}.tgz
+          path: verdaccio-${{ needs.Setup.outputs.Date }}.tgz
           if-no-files-found: error
 
       - name: Upload verdaccio ToC artifact
         uses: actions/upload-artifact@v4
         with:
-          name: verdaccio-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: verdaccio-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: verdaccio-${{ needs.Setup.outputs.Date }}.tgz.txt
+          path: verdaccio-${{ needs.Setup.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
       - name: Upload cache artifact
         uses: actions/upload-artifact@v4
         with:
-          name: yarn-cache-${{ needs.Date.outputs.Date }}.tgz
-          path: yarn-cache-${{ needs.Date.outputs.Date }}.tgz
+          name: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz
+          path: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz
           if-no-files-found: error
 
       - name: Upload cache ToC artifact
         uses: actions/upload-artifact@v4
         with:
-          name: yarn-cache-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: yarn-cache-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.txt
+          path: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
       - name: Upload modules artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-modules-${{ needs.Date.outputs.Date }}.tgz
-          path: node-modules-${{ needs.Date.outputs.Date }}.tgz
+          name: node-modules-${{ needs.Setup.outputs.Date }}.tgz
+          path: node-modules-${{ needs.Setup.outputs.Date }}.tgz
           if-no-files-found: error
 
       - name: Upload modules ToC artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-modules-${{ needs.Date.outputs.Date }}.tgz.txt
-          path: node-modules-${{ needs.Date.outputs.Date }}.tgz.txt
+          name: node-modules-${{ needs.Setup.outputs.Date }}.tgz.txt
+          path: node-modules-${{ needs.Setup.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
       # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
@@ -175,7 +189,7 @@ jobs:
 
   MakeISO:
     runs-on: ubuntu-latest
-    needs: [Date, Collect]
+    needs: [Setup, Collect]
     permissions:
       contents: write
       pull-requests: read
@@ -199,15 +213,15 @@ jobs:
           echo -e "\nDownloading installers\n"
           mkdir -p ISO/runtimes
           cd ISO/runtimes
-          wget -nv https://nodejs.org/dist/latest-v18.x/node-v18.20.4-x64.msi
-          wget -nv https://nodejs.org/dist/latest-v20.x/node-v20.16.0-x64.msi
-          wget -nv https://nodejs.org/dist/latest-v22.x/node-v22.6.0-x64.msi
-          wget -nv https://nodejs.org/dist/latest-v18.x/node-v18.20.4-win-x64.zip
-          wget -nv https://nodejs.org/dist/latest-v20.x/node-v20.16.0-win-x64.zip
-          wget -nv https://nodejs.org/dist/latest-v22.x/node-v22.6.0-win-x64.zip
-          wget -nv https://nodejs.org/dist/latest-v18.x/node-v18.20.4-linux-x64.tar.xz
-          wget -nv https://nodejs.org/dist/latest-v20.x/node-v20.16.0-linux-x64.tar.xz
-          wget -nv https://nodejs.org/dist/latest-v22.x/node-v22.6.0-linux-x64.tar.xz
+          wget -nv https://nodejs.org/dist/latest-v18.x/node-${{ needs.Setup.outputs.v18 }}-x64.msi
+          wget -nv https://nodejs.org/dist/latest-v20.x/node-${{ needs.Setup.outputs.v20 }}-x64.msi
+          wget -nv https://nodejs.org/dist/latest-v22.x/node-${{ needs.Setup.outputs.v22 }}-x64.msi
+          wget -nv https://nodejs.org/dist/latest-v18.x/node-${{ needs.Setup.outputs.v18 }}-win-x64.zip
+          wget -nv https://nodejs.org/dist/latest-v20.x/node-${{ needs.Setup.outputs.v20 }}-win-x64.zip
+          wget -nv https://nodejs.org/dist/latest-v22.x/node-${{ needs.Setup.outputs.v22 }}-win-x64.zip
+          wget -nv https://nodejs.org/dist/latest-v18.x/node-${{ needs.Setup.outputs.v18 }}-linux-x64.tar.xz
+          wget -nv https://nodejs.org/dist/latest-v20.x/node-${{ needs.Setup.outputs.v20 }}-linux-x64.tar.xz
+          wget -nv https://nodejs.org/dist/latest-v22.x/node-${{ needs.Setup.outputs.v22 }}-linux-x64.tar.xz
 
       - name: Copy Markdowns to ISO
         run: cp -v *.md ISO/
@@ -218,19 +232,19 @@ jobs:
       - name: Make ISO
         run: |
           mkisofs -J -R -v -T -l \
-            -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
-            -A '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
-            -o ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso \
+            -V '${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}' \
+            -A '${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}' \
+            -o ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso \
             ISO
 
       - name: Implant MD5 sum into iso
-        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso
 
       - name: Generate Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso >>\
-            ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
-          cat ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso >>\
+            ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
+          cat ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
         run: ls -alh *.iso*
@@ -238,20 +252,20 @@ jobs:
       - name: Upload iso artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+          name: ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso
+          path: ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso
           if-no-files-found: error
 
       - name: Upload iso sha artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
-          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          name: ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
+          path: ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
           if-no-files-found: error
 
   OfflineTest:
     runs-on: ubuntu-latest
-    needs: [Date, MakeISO]
+    needs: [Setup, MakeISO]
     permissions:
       contents: write
       pull-requests: read
@@ -270,7 +284,7 @@ jobs:
       - name: Download ISO and hash
         uses: actions/download-artifact@v4
         with:
-          pattern: "${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso*"
+          pattern: "${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso*"
           merge-multiple: true
 
       - name: Validate Hashes
@@ -278,15 +292,15 @@ jobs:
           echo -e "List Artifacts"
           ls -Alht
           echo -e "\nCheck injected ISO MD5"
-          checkisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+          checkisomd5 ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso
           echo -e "\nCheck ISO sha256"
-          sha256sum -cw ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          sha256sum -cw ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
 
       - name: Mount ISO
-        run: sudo mount -v -o loop ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso /mnt
+        run: sudo mount -v -o loop ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso /mnt
 
       - name: UnTARchive Yarn Cache
-        run: tar -xzvf /mnt/yarn-cache-${{ needs.Date.outputs.Date }}.tgz
+        run: tar -xzvf /mnt/yarn-cache-${{ needs.Setup.outputs.Date }}.tgz
 
       - name: Run yarn install
         run: |
@@ -305,7 +319,7 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    needs: [Date, OfflineTest]
+    needs: [Setup, OfflineTest]
     permissions:
       contents: write
       pull-requests: read
@@ -324,7 +338,7 @@ jobs:
 
   Sharepoint:
     runs-on: ubuntu-latest
-    needs: [Date, OfflineTest]
+    needs: [Setup, OfflineTest]
     permissions:
       contents: write
       pull-requests: read
