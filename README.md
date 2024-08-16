@@ -1,6 +1,6 @@
 # What is this?
 
-[![Release](https://github.com/jacobsfederal/Collector-Node-Web/actions/workflows/collect.yml/badge.svg?branch=main)](https://github.com/JacobsFederal/Collector-Node-Web/actions/workflows/collect.yml)
+[![Release](https://github.com/jacobsfederal/Collector-Node-Web/actions/workflows/yarn-main.yml/badge.svg?branch=main)](https://github.com/JacobsFederal/Collector-Node-Web/actions/workflows/yarn-main.yml)
 
 This is a project that automatically collects artifacts to ease in air-gapped transfer from the internet.
 
