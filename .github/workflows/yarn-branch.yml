@@ -221,6 +221,7 @@ jobs:
           wget -nv https://nodejs.org/dist/latest-v18.x/node-${{ needs.Setup.outputs.v18 }}-linux-x64.tar.xz
           wget -nv https://nodejs.org/dist/latest-v20.x/node-${{ needs.Setup.outputs.v20 }}-linux-x64.tar.xz
           wget -nv https://nodejs.org/dist/latest-v22.x/node-${{ needs.Setup.outputs.v22 }}-linux-x64.tar.xz
+          sha256sum -b * | tee node_runtimes.sha
 
       - name: Copy Markdowns to ISO
         run: cp -v *.md ISO/
@@ -241,9 +242,8 @@ jobs:
 
       - name: Generate Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso >>\
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso ! tee \
             ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
-          cat ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
         run: ls -Alh *.iso*
