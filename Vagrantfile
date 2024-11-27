@@ -44,7 +44,6 @@ Vagrant.configure("2") do |config|
   # Shell script provisioner                                                 #
   ############################################################################
   config.vm.provision "shell", inline: <<-'SHELL'
-
     ############################################################################
     # Add Software                                                             #
     ############################################################################
@@ -62,7 +61,7 @@ Vagrant.configure("2") do |config|
 
     echo -e "\nUpdating to NodeJS 20\n"
     dnf module -y reset nodejs
-    dnf module -y enable nodejs:20
+    dnf module -y enable nodejs:18
     dnf distro-sync -y
 
     # Install Container/Additional Software
@@ -81,10 +80,10 @@ Vagrant.configure("2") do |config|
 
     # Import .ssh to vagrant user
     echo -e "\nSetting up vagrant user .ssh"
+    cp -v /root/.gitconfig /home/vagrant/
     git config --global http.sslBackend openssl
     cat /home/vagrant/.ssh/id*.pub >> /home/vagrant/.ssh/authorized_keys
     cat /root/.ssh/id*.pub >> /root/.ssh/authorized_keys
-    cp -v /root/.gitconfig /home/vagrant/
     chown -R vagrant:vagrant /home/vagrant
     chmod -R 600 /home/vagrant/.ssh
     chmod 700 /home/vagrant/.ssh
@@ -92,22 +91,26 @@ Vagrant.configure("2") do |config|
     # Install Yarn etc
     echo -e "\nInstall yarn & verdaccio"
     npm install -g verdaccio yarn corepack
-    # corepack enable
 
     echo -e "\nUpdate NPM"
     npm install -g npm@10.8.2
     
-    # Enable FIPS
-    echo -e "\nEnabling FIPS\n"
-    fips-mode-setup --enable
-
-    echo -e "\nDone. Rebooting.\n"
+   echo -e "\nDone Updating. Rebooting.\n"
   SHELL
 
+  # Reboot to enable updates
+  config.vm.provision 'shell', reboot: true
+
+  # Enable FIPS
+  config.vm.provision "shell", inline: <<-'SHELL'
+    echo -e "\nEnabling FIPS\n"
+    fips-mode-setup --enable
+  SHELL
+    
   # Reboot to enable FIPS
   config.vm.provision 'shell', reboot: true
 
-  # Run Local routine
+  # Run Local routine to set up environment
   config.vm.provision "shell", privileged: false,
   env: {
     GITHUB_TOKEN:ENV['GITHUB_TOKEN']
@@ -121,29 +124,34 @@ Vagrant.configure("2") do |config|
     fi
     export DATE=`date '+%Y%m%d-%H%M'`
 
-    echo -e "\nUpdate Yarn & verdaccio"
+    echo -e "\nUpdate Yarn"
     git config --global http.sslBackend openssl
-    sudo corepack enable
     yarn set version 4.0.2
 
     echo -e "\nRunning local collection process\n"
-    git clone https://github.com/JacobsFederal/Collector-Node.git
-    cd Collector-Node 
-    # yarn install -g verdaccio
-    # echo -e "\nRunning verdaccio\n"
-    # yarn dlx verdaccio &
-    # sleep 12
-    # echo -e "\nSetting up yarn\n"
-    # npm set registry http://localhost:4873/
-    # yarn config set npmRegistryServer http://localhost:4873/
-    # echo -e "\nChecking Connectivity\n"
-    # curl http://localhost:4873 -o test.html
-    # sleep 1
-    echo -e "\nRunning Yarn"
-    yarn install
-    # echo -e "\nListing ~/.local/share/verdaccio/*"
-    #     ls -Alht ~/.local/share/verdaccio/*
+    git clone https://github.com/AmentumServices/Collector-Node-Web.git
+    cd Collector-Node-Web
+    echo -e "\nRunning verdaccio\n"
+    yarn dlx verdaccio > verdaccio.log 2> verdaccio-err.log &
+    tail -f verdaccio.log & P=$! && sleep 45 && kill -9 $P
 
+    echo -e "\nTailing errors\n"
+    tail verdaccio-err.log
+
+    echo -e "\nSetting up yarn\n"
+    npm set registry http://localhost:4873/
+    yarn config set npmRegistryServer http://localhost:4873/
+    echo -e "\nChecking Connectivity\n"
+    curl http://localhost:4873 -o test.html
+    sleep 1
+    echo -e "\nRunning Yarn install"
+    yarn install
+    echo -e "\nListing verdaccio"
+    ls -Alht verdaccio/*
+    du -d1ch
+    echo -e "\nListing Consumption"
+    du -chd0 .yarn verdaccio node_modules
+    
     # ./collect.sh
     # ./mkiso.sh
     
