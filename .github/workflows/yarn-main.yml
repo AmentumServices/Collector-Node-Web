@@ -29,10 +29,32 @@ jobs:
       - name: Get current node versions
         id: v
         run: |
-          echo -e "\nGetting versions"
-          echo "v18=$(curl -s https://nodejs.org/dist/latest-v18.x/ | grep -oP 'v18\.\d+\.\d+' | head -1)" >> $GITHUB_OUTPUT
-          echo "v20=$(curl -s https://nodejs.org/dist/latest-v20.x/ | grep -oP 'v20\.\d+\.\d+' | head -1)" >> $GITHUB_OUTPUT
-          echo "v22=$(curl -s https://nodejs.org/dist/latest-v22.x/ | grep -oP 'v22\.\d+\.\d+' | head -1)" >> $GITHUB_OUTPUT
+          echo -e "Getting versions"
+
+          # Fetch the Node.js version data
+          node_versions=$(curl -s https://nodejs.org/dist/index.json)
+          
+          # Function to get the latest version for a specific major version
+          get_version() { 
+            major_version=$1 
+            echo $node_versions |\
+              jq -r --arg major_version "v$major_version" \
+                '[.[] | select(.version | startswith($major_version))][0].version'
+          }
+
+          # Fetch the latest versions for v18, v20, and v22
+          v18=$(get_version 18)
+          v20=$(get_version 20)
+          v22=$(get_version 22)
+
+          echo "The latest Node.js v18 version is: $v18"
+          echo "The latest Node.js v20 version is: $v20"
+          echo "The latest Node.js v22 version is: $v22"
+
+          echo "v18=${v18}" >> $GITHUB_OUTPUT
+          echo "v20=${v20}" >> $GITHUB_OUTPUT
+          echo "v22=${v22}" >> $GITHUB_OUTPUT
+
           echo -e "\nFile:\n$GITHUB_OUTPUT"
           echo "Values:"
           cat $GITHUB_OUTPUT
@@ -49,10 +71,10 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ vars.NODE_VER }}
+      - name: Use Node.js ${{ needs.Setup.outputs.v18 }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ vars.NODE_VER }}
+          node-version: ${{ needs.Setup.outputs.v18 }}
           cache: "npm"
 
       - name: Set up git
@@ -223,12 +245,13 @@ jobs:
           wget -nv https://nodejs.org/dist/latest-v18.x/node-${{ needs.Setup.outputs.v18 }}-linux-x64.tar.xz
           wget -nv https://nodejs.org/dist/latest-v20.x/node-${{ needs.Setup.outputs.v20 }}-linux-x64.tar.xz
           wget -nv https://nodejs.org/dist/latest-v22.x/node-${{ needs.Setup.outputs.v22 }}-linux-x64.tar.xz
+          sha256sum -b * | tee node_runtimes.sha
 
       - name: Copy Markdowns to ISO
         run: cp -v *.md ISO/
 
       - name: Show Artifacts
-        run: ls -alh ISO/*tgz*
+        run: ls -Alh ISO/*tgz*
 
       - name: Make ISO
         run: |
@@ -243,12 +266,11 @@ jobs:
 
       - name: Generate Hash
         run: |
-          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso >>\
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso | tee \
             ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
-          cat ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
-        run: ls -alh *.iso*
+        run: ls -Alh *.iso*
 
       - name: Upload iso artifact
         uses: actions/upload-artifact@v4
@@ -376,12 +398,12 @@ jobs:
         run: ls -lh *tgz* *iso*
 
       - name: Send Files to Sharepoint
-        uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
+        uses: amentumservices/sharepoint-file-upload-action@pappasjfed-patch-1
         with:
           file_path: "*tgz*"
-          host_name: "jacobsfederal.sharepoint.us"
-          site_name: "USCMSNISSCII.DSO"
-          upload_path: "${{ vars.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/${{ needs.Setup.outputs.Date }}"
+          host_name: "${{ secrets.SHAREPOINT_HOST }}"
+          site_name: "${{ secrets.SHAREPOINT_SITE }}"
+          upload_path: "${{ secrets.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/${{ needs.Setup.outputs.Date }}"
           tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
           client_id: ${{ secrets.SHAREPOINT_APP_ID }}
           client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
@@ -389,12 +411,12 @@ jobs:
           graph_endpoint: "graph.microsoft.us"
 
       - name: Send ISO to Sharepoint
-        uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
+        uses: amentumservices/sharepoint-file-upload-action@pappasjfed-patch-1
         with:
           file_path: "*.iso*"
-          host_name: "jacobsfederal.sharepoint.us"
-          site_name: "USCMSNISSCII.DSO"
-          upload_path: "${{ vars.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/"
+          host_name: "${{ secrets.SHAREPOINT_HOST }}"
+          site_name: "${{ secrets.SHAREPOINT_SITE }}"
+          upload_path: "${{ secrets.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/"
           tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
           client_id: ${{ secrets.SHAREPOINT_APP_ID }}
           client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
