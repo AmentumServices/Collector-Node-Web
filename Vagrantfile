@@ -13,18 +13,8 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "https://oracle.github.io/vagrant-projects/boxes/oraclelinux/9-btrfs.json"
   config.vm.hostname = "Node-Collector"
 
-  config.vagrant.plugins = ["vagrant-vbguest","vagrant-faster"]
-  config.vbguest.auto_update = false
   config.ssh.key_type = :ecdsa521 # Requires Vagrant 2.4.1
 
-  # config.vm.synced_folder ".", "/vagrant"
-  # config.vm.synced_folder ".", 
-  #   "/home/vagrant/",
-  #   type: "rsync",
-  #   rsync__rsync_path: "rsync",
-  #   rsync__chown: true,
-  #   rsync__verbose: true
-  
   ############################################################################
   # Provider-specific configuration                                          #
   ############################################################################
@@ -54,7 +44,6 @@ Vagrant.configure("2") do |config|
   # Shell script provisioner                                                 #
   ############################################################################
   config.vm.provision "shell", inline: <<-'SHELL'
-
 
     ############################################################################
     # Add Software                                                             #
@@ -109,8 +98,8 @@ Vagrant.configure("2") do |config|
     npm install -g npm@10.8.2
     
     # Enable FIPS
-    # echo -e "\nEnabling FIPS\n"
-    # fips-mode-setup --enable
+    echo -e "\nEnabling FIPS\n"
+    fips-mode-setup --enable
 
     echo -e "\nDone. Rebooting.\n"
   SHELL
