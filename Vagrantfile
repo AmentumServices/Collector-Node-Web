@@ -95,7 +95,7 @@ Vagrant.configure("2") do |config|
     echo -e "\nUpdate NPM"
     npm install -g npm@10.8.2
     
-   echo -e "\nDone Updating. Rebooting.\n"
+    echo -e "\nDone Updating. Rebooting.\n"
   SHELL
 
   # Reboot to enable updates
@@ -151,7 +151,7 @@ Vagrant.configure("2") do |config|
     du -d1ch
     echo -e "\nListing Consumption"
     du -chd0 .yarn verdaccio node_modules
-    
+
     # ./collect.sh
     # ./mkiso.sh
     
