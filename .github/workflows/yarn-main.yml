@@ -53,7 +53,7 @@ jobs:
 
           echo "v18=${latest_v18}" >> $GITHUB_OUTPUT
           echo "v20=${latest_v20}" >> $GITHUB_OUTPUT
-          echo "v22=${latest_v21}" >> $GITHUB_OUTPUT
+          echo "v22=${latest_v22}" >> $GITHUB_OUTPUT
           echo -e "\nFile:\n$GITHUB_OUTPUT"
           echo "Values:"
           cat $GITHUB_OUTPUT
