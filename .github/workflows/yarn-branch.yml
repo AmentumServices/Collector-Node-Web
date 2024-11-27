@@ -27,7 +27,7 @@ jobs:
       - name: Get current node versions
         id: v
         run: |
-          echo -e "\nGetting versions"
+          echo -e "Getting versions"
 
           # Fetch the Node.js version data
           node_versions=$(curl -s https://nodejs.org/dist/index.json)
@@ -49,9 +49,10 @@ jobs:
           echo "The latest Node.js v20 version is: $v20"
           echo "The latest Node.js v22 version is: $v22"
 
-          echo "${v18}" >> $GITHUB_OUTPUT
-          echo "${v20}" >> $GITHUB_OUTPUT
-          echo "${v22}" >> $GITHUB_OUTPUT
+          echo "v18=${v18}" >> $GITHUB_OUTPUT
+          echo "v20=${v20}" >> $GITHUB_OUTPUT
+          echo "v22=${v22}" >> $GITHUB_OUTPUT
+
           echo -e "\nFile:\n$GITHUB_OUTPUT"
           echo "Values:"
           cat $GITHUB_OUTPUT
