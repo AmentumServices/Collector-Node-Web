@@ -132,17 +132,19 @@ Vagrant.configure("2") do |config|
     git clone https://github.com/AmentumServices/Collector-Node-Web.git
     cd Collector-Node-Web
     echo -e "\nRunning verdaccio\n"
-    yarn dlx verdaccio > verdaccio.log 2> verdaccio-err.log &
-    tail -f verdaccio.log & P=$! && sleep 45 && kill -9 $P
+    yarn dlx verdaccio -c verdaccio/config.yml >\
+      verdaccio/verdaccio.log 2>\
+      verdaccio/verdaccio-err.log &
+    tail -f verdaccio/verdaccio.log & P=$! && sleep 45 && kill -9 $P
 
     echo -e "\nTailing errors\n"
-    tail verdaccio-err.log
+    tail verdaccio/verdaccio-err.log
 
     echo -e "\nSetting up yarn\n"
     npm set registry http://localhost:4873/
     yarn config set npmRegistryServer http://localhost:4873/
     echo -e "\nChecking Connectivity\n"
-    curl http://localhost:4873 -o test.html
+    curl http://localhost:4873 -o /dev/null
     sleep 1
     echo -e "\nRunning Yarn install"
     yarn install
