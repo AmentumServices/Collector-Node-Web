@@ -97,16 +97,16 @@ jobs:
 
       - name: Listings
         run: |
-          echo -e "\nListing ~/.local/share/verdaccio/*"
-          ls -Alht ~/.local/share/verdaccio/*
+          echo -e "\nListing verdaccio/*"
+          ls -Alht verdaccio/*
           echo -e "\nListing Consumption"
-          du -chd0 .yarn node_modules ~/.local/share/verdaccio/*
+          du -chd0 .yarn node_modules verdaccio/*
 
       - name: TARchive verdaccio storage directory
         run: |
-          ls -Alht ~/.local/share/verdaccio/storage
+          ls -Alht verdaccio/storage
           tar -cvzf verdaccio-${{ needs.Setup.outputs.Date }}.tgz \
-            -C ~/.local/share/verdaccio storage \
+            -C verdaccio storage \
             | tee verdaccio-${{ needs.Setup.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
