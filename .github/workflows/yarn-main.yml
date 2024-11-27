@@ -85,7 +85,9 @@ jobs:
       - name: Run yarn with verdaccio
         run: |
           sudo corepack enable
-          yarn dlx verdaccio > verdaccio.log 2> verdaccio-err.log &
+          yarn dlx verdaccio -c verdaccio/config.yml \
+            > verdaccio/verdaccio.log \
+            2> verdaccio/verdaccio-err.log &
           tail -f verdaccio.log & P=$! && sleep 20 && kill -9 $P
           echo -e "\nTailing errors\n"
           tail verdaccio-err.log
@@ -170,8 +172,8 @@ jobs:
       - name: Upload Logs
         uses: actions/upload-artifact@v4
         with:
-          name: Collect-${{ needs.Setup.outputs.Date }}.log
-          path: "*.log"
+          name: Logs-${{ needs.Setup.outputs.Date }}.log
+          path: "verdaccio/*.log"
 
   MakeISO:
     runs-on: ubuntu-latest
