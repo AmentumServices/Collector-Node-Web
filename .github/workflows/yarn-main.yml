@@ -35,7 +35,7 @@ jobs:
           node_versions=$(curl -s https://nodejs.org/dist/index.json)
           
           # Function to get the latest version for a specific major version
-          get_latest_version() { 
+          get_version() { 
             major_version=$1 
             echo $node_versions |\
               jq -r --arg major_version "v$major_version" \
@@ -43,17 +43,17 @@ jobs:
           }
 
           # Fetch the latest versions for v18, v20, and v22
-          latest_v18=$(get_latest_version 18)
-          latest_v20=$(get_latest_version 20)
-          latest_v22=$(get_latest_version 22)
+          v18=$(get_version 18)
+          v20=$(get_version 20)
+          v22=$(get_version 22)
 
-          echo "The latest Node.js v18 version is: $latest_v18"
-          echo "The latest Node.js v20 version is: $latest_v20"
-          echo "The latest Node.js v22 version is: $latest_v22"
+          echo "The latest Node.js v18 version is: $v18"
+          echo "The latest Node.js v20 version is: $v20"
+          echo "The latest Node.js v22 version is: $v22"
 
-          echo "v18=${latest_v18}" >> $GITHUB_OUTPUT
-          echo "v20=${latest_v20}" >> $GITHUB_OUTPUT
-          echo "v22=${latest_v22}" >> $GITHUB_OUTPUT
+          echo "${v18}" >> $GITHUB_OUTPUT
+          echo "${v20}" >> $GITHUB_OUTPUT
+          echo "${v22}" >> $GITHUB_OUTPUT
           echo -e "\nFile:\n$GITHUB_OUTPUT"
           echo "Values:"
           cat $GITHUB_OUTPUT
