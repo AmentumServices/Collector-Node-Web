@@ -84,7 +84,7 @@ jobs:
 
       - name: Run yarn with verdaccio
         run: |
-          export XDG_DATA_HOME=$PWD/verdaccio
+          export XDG_DATA_HOME=$PWD
           sudo corepack enable
           yarn dlx verdaccio >\
             verdaccio/verdaccio.log 2>\
