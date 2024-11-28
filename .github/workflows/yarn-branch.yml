@@ -107,9 +107,9 @@ jobs:
 
       - name: TARchive verdaccio storage directory
         run: |
-          ls -Alht verdaccio/storage
+          ls -Alht verdaccio/*
           tar -cvzf verdaccio-${{ needs.Setup.outputs.Date }}.tgz \
-            -C verdaccio storage \
+            verdaccio \
             | tee verdaccio-${{ needs.Setup.outputs.Date }}.tgz.txt
 
       - name: TARchive node_modules directory
