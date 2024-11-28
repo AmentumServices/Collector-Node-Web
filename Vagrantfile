@@ -130,11 +130,11 @@ Vagrant.configure("2") do |config|
 
     echo -e "\nRunning local collection process\n"
     git clone https://github.com/AmentumServices/Collector-Node-Web.git
-    cd Collector-Node-Web
+    cd Collector-Node-Web && export XDG_DATA_HOME=$PWD
     echo -e "\nRunning verdaccio\n"
     yarn dlx verdaccio >\
       verdaccio/verdaccio.log 2>\
-      verdaccio/verdaccio-err.log &&\
+      verdaccio/verdaccio-err.log &
     tail -f verdaccio/verdaccio.log & P=$! && sleep 45 && kill -9 $P
 
     echo -e "\nTailing errors\n"
