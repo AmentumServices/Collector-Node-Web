@@ -132,7 +132,7 @@ Vagrant.configure("2") do |config|
     git clone https://github.com/AmentumServices/Collector-Node-Web.git
     cd Collector-Node-Web
     echo -e "\nRunning verdaccio\n"
-    yarn dlx verdaccio -c verdaccio/config.yml >\
+    yarn dlx verdaccio >\
       verdaccio/verdaccio.log 2>\
       verdaccio/verdaccio-err.log &&\
     tail -f verdaccio/verdaccio.log & P=$! && sleep 45 && kill -9 $P

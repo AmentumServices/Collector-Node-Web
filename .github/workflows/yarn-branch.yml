@@ -84,7 +84,7 @@ jobs:
         run: |
           export XDG_DATA_HOME=$PWD/verdaccio
           sudo corepack enable
-          yarn dlx verdaccio -c verdaccio/config.yml >\
+          yarn dlx verdaccio >\
             verdaccio/verdaccio.log 2>\
             verdaccio/verdaccio-err.log &&\
           tail -f verdaccio/verdaccio.log & P=$! && sleep 30 && kill -9 $P &&\
