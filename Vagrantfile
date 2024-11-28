@@ -134,7 +134,7 @@ Vagrant.configure("2") do |config|
     echo -e "\nRunning verdaccio\n"
     yarn dlx verdaccio -c verdaccio/config.yml >\
       verdaccio/verdaccio.log 2>\
-      verdaccio/verdaccio-err.log &
+      verdaccio/verdaccio-err.log &&\
     tail -f verdaccio/verdaccio.log & P=$! && sleep 45 && kill -9 $P
 
     echo -e "\nTailing errors\n"
