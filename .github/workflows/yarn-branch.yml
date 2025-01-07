@@ -89,6 +89,7 @@ jobs:
       - name: Run yarn with verdaccio
         run: |
           export XDG_DATA_HOME=$PWD
+
           echo -e "\nRunning Verdaccio"
           yarn dlx verdaccio >\
             verdaccio/verdaccio.log 2>\
