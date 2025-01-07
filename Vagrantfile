@@ -94,8 +94,8 @@ Vagrant.configure("2") do |config|
     dnf update -y
   SHELL
 
-  # # Reboot to prepare to enable FIPS
-  # config.vm.provision 'shell', reboot: true
+  # Reboot to enable updates
+  config.vm.provision 'shell', reboot: true
 
   # Enable Fips
   config.vm.provision "shell", inline: <<-'SHELL'
