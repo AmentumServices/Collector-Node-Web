@@ -98,9 +98,11 @@ jobs:
           tail -f verdaccio/verdaccio.log & P=$! && sleep 30 && kill -9 $P
           echo -e "\nTailing errors\n" &&\
           tail verdaccio/verdaccio-err.log
+          
           echo -e "\nSetting up registries"
           npm set registry http://localhost:4873/
           yarn config set npmRegistryServer http://localhost:4873/
+          
           echo -e "\nChecking Connectivity\n"
           curl http://localhost:4873 -o test.html
           sleep 1
