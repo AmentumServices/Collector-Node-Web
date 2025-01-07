@@ -69,10 +69,10 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ needs.Setup.outputs.v18 }}
+      - name: Use Node.js $(${{ needs.Setup.outputs.v18 }}/.*.*/)
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ needs.Setup.outputs.v18 }}
+          node-version: $(${{ needs.Setup.outputs.v18 }}/.*.*/)
           cache: "npm"
 
       - name: Set up git
