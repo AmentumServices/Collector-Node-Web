@@ -79,7 +79,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ vars.NODE_VER }}
-          cache: "npm"
+          cache: "yarn"
 
       - name: Set up git
         run: |
