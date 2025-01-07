@@ -45,10 +45,6 @@ jobs:
           v20=$(get_version 20)
           v22=$(get_version 22)
 
-          # v18=${v18/v/}
-          # v20=${v20/v/}
-          # v22=${v22/v/}
-
           echo "The latest Node.js v18 version is: $v18"
           echo "The latest Node.js v20 version is: $v20"
           echo "The latest Node.js v22 version is: $v22"
@@ -82,7 +78,8 @@ jobs:
         run: |
           echo -e "\nEnabling Corepack for Yarn"
           sudo corepack enable
-          yarn -v
+          echo "Node Version: $(node -v)"
+          echo "Yarn version: $(yarn -v)"
 
       - name: Set up git
         run: |
