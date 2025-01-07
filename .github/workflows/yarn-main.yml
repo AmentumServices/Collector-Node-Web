@@ -43,9 +43,9 @@ jobs:
           }
 
           # Fetch the latest versions for v18, v20, and v22
-          v18=$(get_version 18/v//)
-          v20=$(get_version 20/v//)
-          v22=$(get_version 22/v//)
+          v18=${$(get_version 18)/v//}
+          v20=${$(get_version 20)/v//}
+          v22=${$(get_version 22)/v//}
 
           echo "The latest Node.js v18 version is: $v18"
           echo "The latest Node.js v20 version is: $v20"
