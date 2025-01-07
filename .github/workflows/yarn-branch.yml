@@ -82,9 +82,14 @@ jobs:
 
       - name: Run yarn with verdaccio
         run: |
-          sudo corepack enable
-          yarn dlx verdaccio &
-          sleep 12
+          export XDG_DATA_HOME=$PWD
+          sudo corepack enable && \
+          yarn dlx verdaccio >\
+            verdaccio/verdaccio.log 2>\
+            verdaccio/verdaccio-err.log &
+          tail -f verdaccio/verdaccio.log & P=$! && sleep 30 && kill -9 $P
+          echo -e "\nTailing errors\n" &&\
+          tail verdaccio/verdaccio-err.log
           npm set registry http://localhost:4873/
           yarn config set npmRegistryServer http://localhost:4873/
           echo -e "\nChecking Connectivity\n"
