@@ -75,11 +75,10 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ vars.NODE_VER }}
+      - name: Use Node.js ${{ needs.Setup.outputs.v18 }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ vars.NODE_VER }}
-          cache: "yarn"
+          node-version: ${{ needs.Setup.outputs.v18 }}
 
       - name: Set up git
         run: |
