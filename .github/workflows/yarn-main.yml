@@ -75,7 +75,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ needs.Setup.outputs.v18 }}
-          cache: "npm"
+
+      - name: Enable Corepack
+        run: |
+          echo -e "\nEnabling Corepack for Yarn"
+          sudo corepack enable
+          echo "Node Version: $(node -v)"
+          echo "Yarn version: $(yarn -v)"
 
       - name: Set up git
         run: |
@@ -85,15 +91,18 @@ jobs:
       - name: Run yarn with verdaccio
         run: |
           export XDG_DATA_HOME=$PWD
-          sudo corepack enable &&\
+          echo -e "\nRunning Verdaccio"
           yarn dlx verdaccio >\
             verdaccio/verdaccio.log 2>\
             verdaccio/verdaccio-err.log &
           tail -f verdaccio/verdaccio.log & P=$! && sleep 30 && kill -9 $P
           echo -e "\nTailing errors\n" &&\
           tail verdaccio/verdaccio-err.log
+
+          echo -e "\nSetting up registries"
           npm set registry http://localhost:4873/
           yarn config set npmRegistryServer http://localhost:4873/
+
           echo -e "\nChecking Connectivity\n"
           curl http://localhost:4873 -o test.html
           sleep 1

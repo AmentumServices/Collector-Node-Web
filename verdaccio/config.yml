@@ -1,5 +1,5 @@
-storage: storage
-plugins: plugins
+storage: ./verdaccio/storage
+plugins: ./verdaccio/plugins
 uplinks:
   npmjs:
     url: https://registry.npmjs.org/
@@ -10,5 +10,4 @@ packages:
     proxy: npmjs
   '**':
     proxy: npmjs
-no_proxy: localhost,127.0.0.1
-logs: { type: stdout, format: pretty, level: http }
+log: { type: stdout, format: pretty, level: http }
