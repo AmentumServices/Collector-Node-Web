@@ -78,11 +78,10 @@ jobs:
         with:
           node-version: ${{ needs.Setup.outputs.v18 }}
 
-      - name: Run yarn with verdaccio
+      - name: Enable Corepack
         run: |
           echo -e "\nEnabling Corepack for Yarn"
-          sudo corepack enable 
-          sleep 12
+          sudo corepack enable
           yarn -v
 
       - name: Set up git
@@ -93,7 +92,6 @@ jobs:
       - name: Run yarn with verdaccio
         run: |
           export XDG_DATA_HOME=$PWD
-
           echo -e "\nRunning Verdaccio"
           yarn dlx verdaccio >\
             verdaccio/verdaccio.log 2>\
