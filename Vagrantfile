@@ -27,7 +27,10 @@ Vagrant.configure("2") do |config|
     
     # Set up VM options
     vb.customize ["modifyvm", :id, "--vm-process-priority", "normal"]
+    vb.customize ["modifyvm", :id, "--graphiccontroller", "vmsvga"]
+    vb.customize ["modifyvm", :id, "--vram", "160"]
     vb.customize ["modifyvm", :id, "--clipboard-mode", "bidirectional"]
+    vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
     vb.customize ["modifyvm", :id, "--usbxhci", "on"]
     vb.customize ["modifyvm", :id, "--audioin", "on"]
     vb.customize ["modifyvm", :id, "--audiocontroller", "hda"]
