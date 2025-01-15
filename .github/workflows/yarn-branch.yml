@@ -8,7 +8,7 @@ on:
 
 jobs:
   Setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       Date: ${{ steps.date.outputs.date }}
       v18:  ${{ steps.v.outputs.v18 }}
@@ -58,7 +58,7 @@ jobs:
           cat $GITHUB_OUTPUT
 
   Collect:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [Setup]
 
     permissions:
@@ -185,7 +185,7 @@ jobs:
           path: "verdaccio/*.log"
 
   MakeISO:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [Setup, Collect]
     permissions:
       contents: write
@@ -232,6 +232,13 @@ jobs:
           tree -a ISO/ \
             | tee ISO/${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.txt
 
+      - name: Upload iso ToC artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.sha.txt
+          path: ISO/${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.txt
+          if-no-files-found: error
+
       - name: Make ISO
         run: |
           mkisofs -J -R -v -T -l \
@@ -266,7 +273,7 @@ jobs:
           if-no-files-found: error
 
   OfflineTest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [Setup, MakeISO]
     permissions:
       contents: write
@@ -320,7 +327,7 @@ jobs:
           yarn run
 
   Release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [Setup, OfflineTest]
     permissions:
       contents: write
@@ -339,7 +346,7 @@ jobs:
         run: ls -lh *tgz* *iso*
 
   Sharepoint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [Setup, OfflineTest]
     permissions:
       contents: write
