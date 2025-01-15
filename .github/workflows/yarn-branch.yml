@@ -227,6 +227,11 @@ jobs:
       - name: Show Artifacts
         run: ls -Alh ISO/*tgz*
 
+      - name: ISO Table of contents
+        run: |
+          tree -a ISO/ \
+            | tee ISO/${{ vars.COLLECTOR }}-${{ needs.Setup.outputs.Date }}.iso.txt
+
       - name: Make ISO
         run: |
           mkisofs -J -R -v -T -l \
