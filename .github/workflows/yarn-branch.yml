@@ -122,6 +122,11 @@ jobs:
             verdaccio \
             | tee verdaccio-${{ needs.Setup.outputs.Date }}.tgz.txt
 
+      - name: TARchive verdaccio storage directory SHA HASH
+        run: |
+          sha256sum -b verdaccio-${{ needs.Setup.outputs.Date }}.tgz | tee \
+            verdaccio-${{ needs.Setup.outputs.Date }}.tgz.sha
+      
       - name: TARchive node_modules directory
         run: |
           ls -lAhS ${{ github.workspace }}
@@ -129,12 +134,22 @@ jobs:
             node_modules yarn.lock \
             | tee node-modules-${{ needs.Setup.outputs.Date }}.tgz.txt
 
+      - name: TARchive verdaccio storage directory SHA HASH
+        run: |
+          sha256sum -b node-modules-${{ needs.Setup.outputs.Date }}.tgz | tee \
+            node-modules-${{ needs.Setup.outputs.Date }}.tgz.sha
+
       - name: TARchive yarn cache directory
         run: |
           ls -lAhS ${{ github.workspace }}
           tar -cvzf yarn-cache-${{ needs.Setup.outputs.Date }}.tgz \
             .yarn yarn.lock \
             | tee yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.txt
+
+      - name: TARchive verdaccio storage directory SHA HASH
+        run: |
+          sha256sum -b yarn-cache-${{ needs.Setup.outputs.Date }}.tgz | tee \
+            yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.sha
 
       - name: Upload verdaccio artifact
         uses: actions/upload-artifact@v4
@@ -150,32 +165,53 @@ jobs:
           path: verdaccio-${{ needs.Setup.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
-      - name: Upload cache artifact
+      - name: Upload verdaccio SHA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verdaccio-${{ needs.Setup.outputs.Date }}.tgz.sha
+          path: verdaccio-${{ needs.Setup.outputs.Date }}.tgz.sha
+          if-no-files-found: error
+
+      - name: Upload yarn-cache artifact
         uses: actions/upload-artifact@v4
         with:
           name: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz
           path: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz
           if-no-files-found: error
 
-      - name: Upload cache ToC artifact
+      - name: Upload yarn-cache ToC artifact
         uses: actions/upload-artifact@v4
         with:
           name: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.txt
           path: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.txt
           if-no-files-found: error
 
-      - name: Upload modules artifact
+      - name: Upload yarn-cache SHA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.sha
+          path: yarn-cache-${{ needs.Setup.outputs.Date }}.tgz.sha
+          if-no-files-found: error
+
+      - name: Upload node-modules artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-modules-${{ needs.Setup.outputs.Date }}.tgz
           path: node-modules-${{ needs.Setup.outputs.Date }}.tgz
           if-no-files-found: error
 
-      - name: Upload modules ToC artifact
+      - name: Upload node-modules ToC artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-modules-${{ needs.Setup.outputs.Date }}.tgz.txt
           path: node-modules-${{ needs.Setup.outputs.Date }}.tgz.txt
+          if-no-files-found: error
+      
+      - name: Upload node-modules SHA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-modules-${{ needs.Setup.outputs.Date }}.tgz.sha
+          path: node-modules-${{ needs.Setup.outputs.Date }}.tgz.sha
           if-no-files-found: error
 
       - name: Upload Logs
